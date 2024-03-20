@@ -51,7 +51,11 @@ android {
 
 dependencies {
 
+    implementation(libs.androidx.credentials)
+    implementation(libs.googleid)
+    // Supabase libraries
     implementation(libs.compose.auth.ui)
+    implementation(libs.compose.auth)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
