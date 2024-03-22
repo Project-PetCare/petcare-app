@@ -15,14 +15,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import fi.project.petcare.viewmodel.AuthViewModel
 import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.compose.auth.ui.FormComponent
 import io.github.jan.supabase.compose.auth.ui.LocalAuthState
@@ -35,12 +36,11 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class)
 @Composable
-fun Register(scope: CoroutineScope, sheetState: SheetState, vModel: AuthViewModel) {
-    val email by vModel.registerEmail.collectAsState()
-    val password by vModel.registerPassword.collectAsState()
+fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: () -> Unit = {}) {
+    var password by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
 
     val state = LocalAuthState.current
-
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -57,7 +57,7 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, vModel: AuthViewMode
         )
         OutlinedEmailField(
             value = email,
-            onValueChange = { vModel.onRegisterEmailChange(it) },
+            onValueChange = { email = it },
             label = { Text("E-Mail") },
             mandatory = email.isNotBlank(), //once an email is entered, it is mandatory. (which enable validation)
             keyboardOptions = KeyboardOptions(
@@ -69,7 +69,7 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, vModel: AuthViewMode
         )
         OutlinedPasswordField(
             value = password,
-            onValueChange = { vModel.onRegisterPasswordChange(it) },
+            onValueChange = { password = it },
             label = { Text("Password") },
             rules = rememberPasswordRuleList(PasswordRule.minLength(8), PasswordRule.containsSpecialCharacter(), PasswordRule.containsDigit(), PasswordRule.containsLowercase(), PasswordRule.containsUppercase()),
             keyboardOptions = KeyboardOptions(
@@ -97,8 +97,8 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, vModel: AuthViewMode
         Button(
             onClick = {
                 scope.launch { sheetState.hide() }.invokeOnCompletion {
-                    if (!sheetState.isVisible) run {
-                        vModel.signUpNewUser()
+                    if (!sheetState.isVisible) {
+                        onRegister()
                     }
                 }
             },
@@ -115,9 +115,9 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, vModel: AuthViewMode
 
 @OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class)
 @Composable
-fun Login(scope: CoroutineScope, sheetState: SheetState, vModel: AuthViewModel) {
-    val email by vModel.loginEmail.collectAsState()
-    val password by vModel.loginPassword.collectAsState()
+fun Login(scope: CoroutineScope, sheetState: SheetState, onLogin: () -> Unit = {}) {
+    var password by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
 
     val state = LocalAuthState.current
     Column(
@@ -136,7 +136,7 @@ fun Login(scope: CoroutineScope, sheetState: SheetState, vModel: AuthViewModel) 
         )
         OutlinedEmailField(
             value = email,
-            onValueChange = { vModel.onLoginEmailChange(it) },
+            onValueChange = { email = it },
             label = { Text("E-Mail") },
             mandatory = email.isNotBlank(), //once an email is entered, it is mandatory. (which enable validation)
             keyboardOptions = KeyboardOptions(
@@ -147,7 +147,7 @@ fun Login(scope: CoroutineScope, sheetState: SheetState, vModel: AuthViewModel) 
         )
         OutlinedPasswordField(
             value = password,
-            onValueChange = { vModel.onLoginPasswordChange(it) },
+            onValueChange = { password = it },
             label = { Text("Password") },
             rules = rememberPasswordRuleList(PasswordRule.minLength(3)),
             keyboardOptions = KeyboardOptions(
@@ -160,8 +160,8 @@ fun Login(scope: CoroutineScope, sheetState: SheetState, vModel: AuthViewModel) 
         Button(
             onClick = {
                 scope.launch { sheetState.hide() }.invokeOnCompletion {
-                    if (!sheetState.isVisible) run {
-                        vModel.signIn()
+                    if (!sheetState.isVisible) {
+                        onLogin()
                     }
                 }
             },

@@ -40,6 +40,10 @@ import fi.project.petcare.viewmodel.AuthViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WelcomeScreen(vModel: AuthViewModel = viewModel()) {
+    val showBottomSheet by vModel.showBottomSheet.collectAsState()
+    val scope = rememberCoroutineScope()
+    val bottomSheetState = rememberModalBottomSheetState()
+
     Box(
         modifier = Modifier
             .windowInsetsPadding(WindowInsets.safeDrawing)
@@ -128,13 +132,8 @@ fun WelcomeScreen(vModel: AuthViewModel = viewModel()) {
         }
     }
 
-    val showBottomSheet by vModel.showBottomSheet.collectAsState()
-    val scope = rememberCoroutineScope()
-    val bottomSheetState = rememberModalBottomSheetState()
-
     if (showBottomSheet) {
         val authState by vModel.authMode.collectAsState()
-
         ModalBottomSheet(
             onDismissRequest = {
                 vModel.closeBottomSheet()
@@ -142,9 +141,9 @@ fun WelcomeScreen(vModel: AuthViewModel = viewModel()) {
             sheetState = bottomSheetState,
             content = {
                 if (authState == AuthViewModel.AuthMode.REGISTER) {
-                    Register(scope = scope, sheetState = bottomSheetState, vModel = vModel)
+                    Register(scope = scope, sheetState = bottomSheetState, onRegister = vModel::handleRegistration)
                 } else {
-                    Login(scope = scope, sheetState = bottomSheetState, vModel = vModel)
+                    Login(scope = scope, sheetState = bottomSheetState, onLogin = vModel::handleLogin)
                 }
             }
         )

@@ -13,7 +13,7 @@ class AuthViewModel: ViewModel() {
     private val _authMode = MutableStateFlow(AuthMode.LOGIN)
     val authMode: StateFlow<AuthMode> = _authMode
 
-    // Sign up/in bottom sheet
+    // Sign up bottom sheet
     private val _showBottomSheet = MutableStateFlow(false)
     val showBottomSheet: StateFlow<Boolean> = _showBottomSheet
 
@@ -21,45 +21,23 @@ class AuthViewModel: ViewModel() {
         _authMode.value = AuthMode.LOGIN
         _showBottomSheet.value = !_showBottomSheet.value
     }
-    fun openRegisterSheet() {
-        _authMode.value = AuthMode.REGISTER
-        _showBottomSheet.value = !_showBottomSheet.value
-    }
     fun closeBottomSheet() {
         _showBottomSheet.value = false
     }
 
-    private val _loginEmail = MutableStateFlow("")
-    private val _loginPassword = MutableStateFlow("")
-    val loginEmail: StateFlow<String> = _loginEmail
-    val loginPassword: StateFlow<String> = _loginPassword
-
-    fun onLoginEmailChange(email: String) {
-        _loginEmail.value = email
-    }
-    fun onLoginPasswordChange(password: String) {
-        _loginPassword.value = password
+    fun openRegisterSheet() {
+        _authMode.value = AuthMode.REGISTER
+        _showBottomSheet.value = !_showBottomSheet.value
     }
 
-    private val _registerEmail = MutableStateFlow("")
-    private val _registerPassword = MutableStateFlow("")
-    val registerEmail: StateFlow<String> = _registerEmail
-    val registerPassword: StateFlow<String> = _registerPassword
-    fun onRegisterEmailChange(email: String) {
-        _registerEmail.value = email
-    }
-    fun onRegisterPasswordChange(password: String) {
-        _registerPassword.value = password
-    }
-
-
-    fun signUpNewUser(/* user: User */) {
+    fun handleRegistration(/* user: User */) {
+        { /* TODO */ }
         closeBottomSheet()
     }
 
-    fun signIn(/* user: User */) {
+    fun handleLogin(/* user: User */) {
+        { /* TODO */ }
         closeBottomSheet()
-
     }
 
 }
