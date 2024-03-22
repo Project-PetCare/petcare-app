@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import fi.project.petcare.viewmodel.HealthRecordViewModel
 import java.util.*
 
 class AddHealthRecordActivity : AppCompatActivity() {
