@@ -141,9 +141,9 @@ fun WelcomeScreen(vModel: AuthViewModel = viewModel()) {
             sheetState = bottomSheetState,
             content = {
                 if (authState == AuthViewModel.AuthMode.REGISTER) {
-                    Register(scope = scope, sheetState = bottomSheetState, onRegister = vModel::handleRegistration)
+                    Register(scope = scope, sheetState = bottomSheetState, onRegister = vModel::signUp)
                 } else {
-                    Login(scope = scope, sheetState = bottomSheetState, onLogin = vModel::handleLogin)
+                    Login(scope = scope, sheetState = bottomSheetState, onLogin = vModel::signIn)
                 }
             }
         )

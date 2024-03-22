@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class)
 @Composable
-fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: () -> Unit = {}) {
+fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: (email: String, password: String) -> Unit) {
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
 
@@ -97,8 +97,8 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: () -> Un
         Button(
             onClick = {
                 scope.launch { sheetState.hide() }.invokeOnCompletion {
-                    if (!sheetState.isVisible) {
-                        onRegister()
+                    if (!sheetState.isVisible) run {
+                        onRegister(email, password)
                     }
                 }
             },
@@ -115,7 +115,7 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: () -> Un
 
 @OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class)
 @Composable
-fun Login(scope: CoroutineScope, sheetState: SheetState, onLogin: () -> Unit = {}) {
+fun Login(scope: CoroutineScope, sheetState: SheetState, onLogin: (email: String, password: String) -> Unit) {
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
 
@@ -160,8 +160,8 @@ fun Login(scope: CoroutineScope, sheetState: SheetState, onLogin: () -> Unit = {
         Button(
             onClick = {
                 scope.launch { sheetState.hide() }.invokeOnCompletion {
-                    if (!sheetState.isVisible) {
-                        onLogin()
+                    if (!sheetState.isVisible) run {
+                        onLogin(email, password)
                     }
                 }
             },
