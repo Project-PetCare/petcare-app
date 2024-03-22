@@ -1,6 +1,5 @@
 package fi.project.petcare.ui.screens
 
-import android.graphics.Paint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,8 +12,8 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Build
-import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Key
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -104,15 +103,15 @@ fun WelcomeScreen(vModel: AuthViewModel = viewModel()) {
                         onClick = { /*TODO*/}, //Login with Google,
                         modifier = Modifier.size(width = 160.dp, height = 58.dp)
                     ) {
-                        Text(text = "Google sign in ")
-                        Icon( Icons.Outlined.Lock, contentDescription = "Passkey")
+                        Text(text = "Sign in with ")
+                        Icon( Icons.Filled.AccountCircle, contentDescription = "Passkey")
                     }
                     OutlinedButton(
                         onClick = { /*TODO*/}, //Login with Google,
                         modifier = Modifier.size(width = 160.dp, height = 58.dp)
                     ) {
                         Text(text = "Passkey ")
-                        Icon( Icons.Outlined.Build, contentDescription = "Passkey")
+                        Icon( Icons.Filled.Key, contentDescription = "Passkey")
                     }
                 }
                 Column (
