@@ -11,7 +11,7 @@ junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 lifecycleRuntimeKtx = "2.7.0"
 activityCompose = "1.8.2"
-composeBom = "2023.08.00"
+composeBom = "2024.03.00"
 lifecycleViewmodelCompose = "2.7.0"
 materialIconsExtended = "1.6.4"
 
