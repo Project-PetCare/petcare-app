@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -18,6 +20,11 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val properties = Properties()
+        properties.load(project.rootProject.file("local.properties").inputStream())
+        buildConfigField("String", "SUPABASE_KEY", properties["SUPABASE_KEY"].toString())
+        buildConfigField("String", "SUPABASE_URL", properties["SUPABASE_URL"].toString())
     }
 
     buildTypes {
@@ -38,6 +45,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -51,11 +59,6 @@ android {
 
 dependencies {
 
-    implementation(libs.androidx.credentials)
-    implementation(libs.googleid)
-    // Supabase libraries
-    implementation(libs.compose.auth.ui)
-    implementation(libs.compose.auth)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -73,4 +76,11 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Credentials manager and sign in with google
+    implementation(libs.androidx.credentials)
+    implementation(libs.googleid)
+    // Supabase libraries
+    implementation(libs.compose.auth.ui)
+    implementation(libs.compose.auth)
 }
