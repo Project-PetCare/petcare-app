@@ -16,15 +16,22 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        val keystoreFile = project.rootProject.file("local.properties")
+        val properties = Properties()
+        properties.load(keystoreFile.inputStream())
+
+        val apiKey = properties.getProperty("api.key") ?: ""
+        val apiUrl = properties.getProperty("api.url") ?: ""
+        val serverClientId = properties.getProperty("server.client.id") ?: ""
+
+        buildConfigField(type = "String", name = "SUPABASE_KEY", value = apiKey)
+        buildConfigField(type = "String", name = "SUPABASE_URL", value = apiUrl)
+        buildConfigField(type = "String", name = "SERVER_CLIENT_ID", value = serverClientId)
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
-
-        val properties = Properties()
-        properties.load(project.rootProject.file("local.properties").inputStream())
-        buildConfigField("String", "SUPABASE_KEY", properties["SUPABASE_KEY"].toString())
-        buildConfigField("String", "SUPABASE_URL", properties["SUPABASE_URL"].toString())
     }
 
     buildTypes {
