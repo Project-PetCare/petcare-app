@@ -12,13 +12,14 @@ import fi.project.petcare.ui.theme.PetCareTheme
 
 @Composable
 fun PetCareApp() {
-    PetCareTheme {
+    PetCareTheme (
+        dynamicColor = false
+    ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
             WelcomeScreen()
-        //testing home screen
 //            HomeScreen()
         }
     }
@@ -27,5 +28,16 @@ fun PetCareApp() {
 @Preview
 @Composable
 fun PetCareAppPreview() {
-    PetCareApp()
+    PetCareTheme (
+        darkTheme = true,
+        dynamicColor = false
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            WelcomeScreen()
+//            HomeScreen()
+        }
+    }
 }
