@@ -88,6 +88,9 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.googleid)
     // Supabase libraries
+    implementation(platform(libs.bom))
     implementation(libs.compose.auth.ui)
     implementation(libs.compose.auth)
+    implementation(libs.gotrue.kt)
+    implementation(libs.ktor.client.android)
 }
