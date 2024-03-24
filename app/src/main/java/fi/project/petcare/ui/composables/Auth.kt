@@ -3,6 +3,8 @@ package fi.project.petcare.ui.composables
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -22,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.compose.auth.ui.FormComponent
 import io.github.jan.supabase.compose.auth.ui.LocalAuthState
 import io.github.jan.supabase.compose.auth.ui.email.OutlinedEmailField
@@ -31,7 +34,7 @@ import io.github.jan.supabase.compose.auth.ui.password.rememberPasswordRuleList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class)
 @Composable
 fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: () -> Unit = {}) {
     var password by remember { mutableStateOf("") }
@@ -42,10 +45,10 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: () -> Un
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 36.dp, bottom = 72.dp)
+            .padding(bottom = 72.dp)
     ) {
         Text(
-            text = "Sign up",
+            text = "Create account",
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(bottom = 8.dp)
         )
@@ -61,7 +64,8 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: () -> Un
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next,
             ),
-            shape = MaterialTheme.shapes.large
+            shape = MaterialTheme.shapes.large,
+            modifier = Modifier.imePadding()
         )
         OutlinedPasswordField(
             value = password,
@@ -72,7 +76,8 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: () -> Un
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done
             ),
-            shape = MaterialTheme.shapes.large
+            shape = MaterialTheme.shapes.large,
+            modifier = Modifier.imePadding()
         )
         FormComponent("accept_terms") { valid ->
             Row (
@@ -101,13 +106,72 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: () -> Un
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 64.dp)
+                .height(58.dp)
         ) {
             Text("Sign up")
         }
     }
 }
 
-//@Composable
-//fun Login() {
-//    { /*TODO*/ }
-//}
+@OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class)
+@Composable
+fun Login(scope: CoroutineScope, sheetState: SheetState, onLogin: () -> Unit = {}) {
+    var password by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+
+    val state = LocalAuthState.current
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 72.dp)
+    ) {
+        Text(
+            text = "Sign in",
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        HorizontalDivider(
+            modifier = Modifier.padding(horizontal = 72.dp, vertical = 16.dp)
+        )
+        OutlinedEmailField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("E-Mail") },
+            mandatory = email.isNotBlank(), //once an email is entered, it is mandatory. (which enable validation)
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next,
+            ),
+            shape = MaterialTheme.shapes.large
+        )
+        OutlinedPasswordField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
+            rules = rememberPasswordRuleList(PasswordRule.minLength(3)),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            ),
+            shape = MaterialTheme.shapes.large,
+            modifier = Modifier.imePadding()
+        )
+        Button(
+            onClick = {
+                scope.launch { sheetState.hide() }.invokeOnCompletion {
+                    if (!sheetState.isVisible) {
+                        onLogin()
+                    }
+                }
+            },
+            enabled = state.validForm,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 64.dp)
+                .height(58.dp)
+        ) {
+            Text("Log in")
+        }
+    }
+}
