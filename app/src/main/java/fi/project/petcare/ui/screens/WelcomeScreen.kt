@@ -11,9 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Key
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,11 +25,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import fi.project.petcare.R
+import fi.project.petcare.ui.composables.GoogleSignInButton
 import fi.project.petcare.ui.composables.Login
 import fi.project.petcare.ui.composables.Register
 import fi.project.petcare.viewmodel.AuthViewModel
@@ -99,19 +99,13 @@ fun WelcomeScreen(vModel: AuthViewModel = viewModel()) {
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
+                    GoogleSignInButton(vModel = vModel)
                     OutlinedButton(
-                        onClick = { /*TODO*/}, //Login with Google,
-                        modifier = Modifier.size(width = 160.dp, height = 58.dp)
-                    ) {
-                        Text(text = "Sign in with ")
-                        Icon( Icons.Filled.AccountCircle, contentDescription = "Passkey")
-                    }
-                    OutlinedButton(
-                        onClick = { /*TODO*/}, //Login with Google,
+                        onClick = { /*TODO*/}, // Sign up with passkey,
                         modifier = Modifier.size(width = 160.dp, height = 58.dp)
                     ) {
                         Text(text = "Passkey ")
-                        Icon( Icons.Filled.Key, contentDescription = "Passkey")
+                        Icon( painterResource(id = R.drawable.ic_passkey), contentDescription = "Passkey")
                     }
                 }
                 Column (
@@ -141,9 +135,9 @@ fun WelcomeScreen(vModel: AuthViewModel = viewModel()) {
             sheetState = bottomSheetState,
             content = {
                 if (authState == AuthViewModel.AuthMode.REGISTER) {
-                    Register(scope = scope, sheetState = bottomSheetState, onRegister = vModel::handleRegistration)
+                    Register(scope = scope, sheetState = bottomSheetState, onRegister = vModel::signUp)
                 } else {
-                    Login(scope = scope, sheetState = bottomSheetState, onLogin = vModel::handleLogin)
+                    Login(scope = scope, sheetState = bottomSheetState, onLogin = vModel::signIn)
                 }
             }
         )
