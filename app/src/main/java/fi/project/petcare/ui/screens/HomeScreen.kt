@@ -1,10 +1,12 @@
 package fi.project.petcare.ui.screens
 
+import android.util.Log
 import fi.project.petcare.R
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Box
 
@@ -16,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -40,7 +43,7 @@ import androidx.navigation.NavController
 
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -89,6 +92,7 @@ fun HomeScreen() {
             ),
             shape = RoundedCornerShape(16.dp)
         ) {
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -100,39 +104,94 @@ fun HomeScreen() {
                     contentDescription = "Pet Cover Photo",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp),
+                        .height(200.dp)
+                        .padding(bottom = 20.dp),
                     contentScale = ContentScale.Crop
                 )
 
-                // Pet Profile details
+//pet profile details
                 Column(
                     modifier = Modifier
                         .padding(16.dp)
                         .align(Alignment.BottomStart)
                 ) {
-                    Text(
-                        text = "Fluffy",
-                        style = TextStyle(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                            color = Color.Black
-                        )
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Age: 3 years",
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            color = Color.Black
-                        )
-                    )
-                    Text(
-                        text = "Type: Dog",
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            color = Color.Black
-                        )
-                    )
+
+                    ClickableRow(
+                        {
+                            try {
+                                navController.navigate("profile")
+                            } catch (e: Exception) {
+                                // Handle navigation error
+                            }
+                        }
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Fluffy",
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 20.sp,
+                                    color = Color.Black
+                                ),
+                                modifier = Modifier.weight(1f)
+                            )
+                            Icon(
+                                painter = painterResource(id = R.drawable.arrow_icon),
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp) // Adjust the size of the arrow icon
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 8.dp)
+                        ) {
+                            Text(
+                                text = "Type: Dog",
+                                style = TextStyle(
+                                    fontSize = 16.sp,
+                                    color = Color.Black
+                                )
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Gender: Male",
+                                style = TextStyle(
+                                    fontSize = 16.sp,
+                                    color = Color.Black
+                                )
+                            )
+                        }
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 8.dp)
+                        ) {
+                            Text(
+                                text = "Age: 3 years",
+                                style = TextStyle(
+                                    fontSize = 16.sp,
+                                    color = Color.Black
+                                )
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Weight: 25kg",
+                                style = TextStyle(
+                                    fontSize = 16.sp,
+                                    color = Color.Black
+                                )
+                            )
+                        }
+                    }
+
                 }
             }
         }
@@ -140,7 +199,7 @@ fun HomeScreen() {
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
-                containerColor = Color.White,
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,
             ),
             shape = RoundedCornerShape(16.dp)
         ) {
@@ -315,7 +374,19 @@ fun PetProfile(
         Text("Type: $petType")
     }
 }
-
+@Composable
+fun ClickableRow(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Row(
+        modifier = modifier.clickable(onClick = onClick).padding(top = 20.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        content()
+    }
+}
 @Composable
 fun RowItem(text: String) {
     Text(text = "- $text", fontSize = 16.sp, color = Color.Black)
