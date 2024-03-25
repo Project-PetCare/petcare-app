@@ -23,8 +23,8 @@ fun PetCareApp() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            WelcomeScreen()
-//            // Create a NavHost home to profile page
+           WelcomeScreen()
+            // Create a NavHost home to profile page
 //            val navController = rememberNavController()
 //            NavHost(navController = navController, startDestination = "home") {
 //                // Define navigation routes
@@ -50,8 +50,8 @@ fun PetCareAppPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            WelcomeScreen()
-            //HomeScreen
+           WelcomeScreen()
+
 //            val navController = rememberNavController()
 //            NavHost(navController = navController, startDestination = "home") {
 //                // Define navigation routes

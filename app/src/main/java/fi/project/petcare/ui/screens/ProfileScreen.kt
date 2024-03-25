@@ -42,7 +42,7 @@ fun ProfileScreen(petName: String ,navController: NavController) {
             },
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
         )
-        Text(text = "Pet Name: $petName")
+//        Text(text = "Pet Name: $petName")
         // Add more profile details as needed
     }
 }
