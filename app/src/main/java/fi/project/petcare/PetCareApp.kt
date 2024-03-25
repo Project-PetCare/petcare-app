@@ -50,14 +50,15 @@ fun PetCareAppPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-//            WelcomeScreen()
-            val navController = rememberNavController()
-            NavHost(navController = navController, startDestination = "home") {
-                // Define navigation routes
-                composable("home") {
-                    HomeScreen(navController = navController)
-                }
-            }
+            WelcomeScreen()
+            //HomeScreen
+//            val navController = rememberNavController()
+//            NavHost(navController = navController, startDestination = "home") {
+//                // Define navigation routes
+//                composable("home") {
+//                    HomeScreen(navController = navController)
+//                }
+//            }
         }
     }
 }
