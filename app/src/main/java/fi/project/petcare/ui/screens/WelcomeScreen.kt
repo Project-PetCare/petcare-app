@@ -39,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import fi.project.petcare.R
+import fi.project.petcare.model.data.AuthMode
 import fi.project.petcare.ui.composables.GoogleSignInButton
 import fi.project.petcare.ui.composables.Login
 import fi.project.petcare.ui.composables.Register
@@ -89,13 +90,13 @@ fun WelcomeScreen(vModel: AuthViewModel = viewModel()) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Button(
-                        onClick = { vModel.openLoginSheet() },
+                        onClick = { vModel.toggleBottomSheet(AuthMode.LOGIN) },
                         modifier = Modifier.size(width = 160.dp, height = 58.dp)
                     ) {
                         Text(text = "Sign in")
                     }
                     Button(
-                        onClick = { vModel.openRegisterSheet() },
+                        onClick = { vModel.toggleBottomSheet(AuthMode.REGISTER) },
                         modifier = Modifier.size(width = 160.dp, height = 58.dp)
                     ) {
                         Text(text = "Join PetCare")
@@ -107,9 +108,10 @@ fun WelcomeScreen(vModel: AuthViewModel = viewModel()) {
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    GoogleSignInButton(vModel = vModel)
+                    GoogleSignInButton(onClick = vModel::googleSignIn )
+                    val context = LocalContext.current
                     OutlinedButton(
-                        onClick = { /*TODO*/}, // Sign up with passkey,
+                        onClick = { vModel.passkeySignIn(context) },
                         modifier = Modifier.size(width = 160.dp, height = 58.dp)
                     ) {
                         Text(text = "Passkey ")
@@ -138,14 +140,14 @@ fun WelcomeScreen(vModel: AuthViewModel = viewModel()) {
         val authState by vModel.authMode.collectAsState()
         ModalBottomSheet(
             onDismissRequest = {
-                vModel.closeBottomSheet()
+                vModel.toggleBottomSheet()
             },
             sheetState = bottomSheetState,
             content = {
-                if (authState == AuthViewModel.AuthMode.REGISTER) {
-                    Register(scope = scope, sheetState = bottomSheetState, onRegister = vModel::signUp)
+                if (authState == AuthMode.REGISTER) {
+                    Register(openDialog = ::toggleDialog, sheetState = bottomSheetState, onRegister = vModel::signUp)
                 } else {
-                    Login(scope = scope, sheetState = bottomSheetState, onLogin = vModel::signIn)
+                    Login(sheetState = bottomSheetState, onLogin = vModel::signIn)
                 }
             }
         )
