@@ -14,6 +14,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,7 +37,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class)
 @Composable
-fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: () -> Unit = {}) {
+fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: (email: String, password: String) -> Unit) {
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
 
@@ -59,9 +60,10 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: () -> Un
             value = email,
             onValueChange = { email = it },
             label = { Text("E-Mail") },
-            mandatory = email.isNotBlank(), //once an email is entered, it is mandatory. (which enable validation)
+            mandatory = email.isNotBlank(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
+                autoCorrect = false,
                 imeAction = ImeAction.Next,
             ),
             shape = MaterialTheme.shapes.large,
@@ -74,6 +76,7 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: () -> Un
             rules = rememberPasswordRuleList(PasswordRule.minLength(8), PasswordRule.containsSpecialCharacter(), PasswordRule.containsDigit(), PasswordRule.containsLowercase(), PasswordRule.containsUppercase()),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
+                autoCorrect = false,
                 imeAction = ImeAction.Done
             ),
             shape = MaterialTheme.shapes.large,
@@ -82,23 +85,24 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: () -> Un
         FormComponent("accept_terms") { valid ->
             Row (
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = 16.dp, start = 16.dp, end = 16.dp)
+                modifier = Modifier.padding(bottom = 16.dp)
             ) {
                 Checkbox(
                     checked = valid.value,
                     onCheckedChange = { valid.value = it },
                 )
-                Text(
-                    text = "Accept Terms and Conditions",
-                    style = MaterialTheme.typography.labelSmall
-                )
+                TextButton(
+                    onClick = { /*TODO: link or show terms and conditions in dialog*/ },
+                ) {
+                    Text("Accept Terms and Conditions", style = MaterialTheme.typography.labelSmall)
+                }
             }
         }
         Button(
             onClick = {
                 scope.launch { sheetState.hide() }.invokeOnCompletion {
-                    if (!sheetState.isVisible) {
-                        onRegister()
+                    if (!sheetState.isVisible) run {
+                        onRegister(email, password)
                     }
                 }
             },
@@ -115,7 +119,7 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: () -> Un
 
 @OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class)
 @Composable
-fun Login(scope: CoroutineScope, sheetState: SheetState, onLogin: () -> Unit = {}) {
+fun Login(scope: CoroutineScope, sheetState: SheetState, onLogin: (email: String, password: String) -> Unit) {
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
 
@@ -141,6 +145,7 @@ fun Login(scope: CoroutineScope, sheetState: SheetState, onLogin: () -> Unit = {
             mandatory = email.isNotBlank(), //once an email is entered, it is mandatory. (which enable validation)
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
+                autoCorrect = false,
                 imeAction = ImeAction.Next,
             ),
             shape = MaterialTheme.shapes.large
@@ -152,16 +157,23 @@ fun Login(scope: CoroutineScope, sheetState: SheetState, onLogin: () -> Unit = {
             rules = rememberPasswordRuleList(PasswordRule.minLength(3)),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
+                autoCorrect = false,
                 imeAction = ImeAction.Done
             ),
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.imePadding()
         )
+        TextButton(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.padding(bottom = 16.dp)
+        ) {
+            Text(text = "Forgot password?", color = MaterialTheme.colorScheme.primary)
+        }
         Button(
             onClick = {
                 scope.launch { sheetState.hide() }.invokeOnCompletion {
-                    if (!sheetState.isVisible) {
-                        onLogin()
+                    if (!sheetState.isVisible) run {
+                        onLogin(email, password)
                     }
                 }
             },
@@ -169,7 +181,7 @@ fun Login(scope: CoroutineScope, sheetState: SheetState, onLogin: () -> Unit = {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 64.dp)
-                .height(58.dp)
+                .height(58.dp),
         ) {
             Text("Log in")
         }
