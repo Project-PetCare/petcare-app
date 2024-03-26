@@ -53,6 +53,13 @@ class AddHealthRecordActivity : AppCompatActivity() {
                     recordDetails
                 )
                 healthRecordViewModel.addHealthRecord(symptomRecord)
+
+                val allergyRecord = HealthRecord(
+                    HealthRecordType.ALLERGY,
+                    Date(),
+                    recordDetails
+                )
+                healthRecordViewModel.addHealthRecord(allergyRecord)
                 finish()
             }
         }
