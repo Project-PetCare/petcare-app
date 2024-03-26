@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import fi.project.petcare.ui.data.HealthRecord
-import java.util.*
 
 class HealthRecordViewModel : ViewModel() {
     private val _healthRecords = MutableLiveData<List<HealthRecord>>()
