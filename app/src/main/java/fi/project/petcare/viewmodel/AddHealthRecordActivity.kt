@@ -1,4 +1,4 @@
-package fi.project.petcare.ui.screens
+package fi.project.petcare.viewmodel
 
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -8,7 +8,6 @@ import com.google.android.material.textfield.TextInputEditText
 import fi.project.petcare.R
 import fi.project.petcare.ui.data.HealthRecord
 import fi.project.petcare.ui.data.HealthRecordType
-import fi.project.petcare.viewmodel.HealthRecordViewModel
 import java.util.*
 
 class AddHealthRecordActivity : AppCompatActivity() {
@@ -33,6 +32,12 @@ class AddHealthRecordActivity : AppCompatActivity() {
                     recordDetails
                 )
                 healthRecordViewModel.addHealthRecord(operationRecord)
+                val veterinarianRecord = HealthRecord(
+                    HealthRecordType.VETERINARIAN_VISIT,
+                    Date(),
+                    recordDetails
+                )
+                healthRecordViewModel.addHealthRecord(veterinarianRecord)
                 finish()
             }
         }
