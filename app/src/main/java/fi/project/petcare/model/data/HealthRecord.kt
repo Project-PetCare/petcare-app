@@ -1,4 +1,4 @@
-package fi.project.petcare.ui.data
+package fi.project.petcare.model.data
 
 import java.util.*
 

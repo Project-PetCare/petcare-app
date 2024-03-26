@@ -6,8 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import fi.project.petcare.R
-import fi.project.petcare.ui.data.HealthRecord
-import fi.project.petcare.ui.data.HealthRecordType
+import fi.project.petcare.model.data.HealthRecord
+import fi.project.petcare.model.data.HealthRecordType
 import java.util.*
 
 class AddHealthRecordActivity : AppCompatActivity() {

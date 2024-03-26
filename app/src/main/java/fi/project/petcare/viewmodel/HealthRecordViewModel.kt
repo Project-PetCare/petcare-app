@@ -3,7 +3,7 @@ package fi.project.petcare.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import fi.project.petcare.ui.data.HealthRecord
+import fi.project.petcare.model.data.HealthRecord
 
 class HealthRecordViewModel : ViewModel() {
     private val _healthRecords = MutableLiveData<List<HealthRecord>>()
