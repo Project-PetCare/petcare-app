@@ -46,6 +46,13 @@ class AddHealthRecordActivity : AppCompatActivity() {
                     recordDetails
                 )
                 healthRecordViewModel.addHealthRecord(medicationRecord)
+
+                val symptomRecord = HealthRecord(
+                    HealthRecordType.SYMPTOM,
+                    Date(),
+                    recordDetails
+                )
+                healthRecordViewModel.addHealthRecord(symptomRecord)
                 finish()
             }
         }
