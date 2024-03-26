@@ -67,6 +67,13 @@ class AddHealthRecordActivity : AppCompatActivity() {
                     recordDetails
                 )
                 healthRecordViewModel.addHealthRecord(exerciseRecord)
+
+                val weightRecord = HealthRecord(
+                    HealthRecordType.WEIGHT_MEASUREMENT,
+                    Date(),
+                    recordDetails
+                )
+                healthRecordViewModel.addHealthRecord(weightRecord)
                 finish()
             }
         }
