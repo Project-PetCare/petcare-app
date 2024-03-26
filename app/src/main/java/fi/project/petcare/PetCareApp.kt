@@ -6,7 +6,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import fi.project.petcare.ui.screens.HomeScreen
+import fi.project.petcare.ui.screens.ProfileScreen
 import fi.project.petcare.ui.screens.WelcomeScreen
 import fi.project.petcare.ui.theme.PetCareTheme
 
@@ -19,8 +23,18 @@ fun PetCareApp() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            WelcomeScreen()
-//            HomeScreen()
+           WelcomeScreen()
+            // Create a NavHost home to profile page
+//            val navController = rememberNavController()
+//            NavHost(navController = navController, startDestination = "home") {
+//                // Define navigation routes
+//                composable("home") {
+//                    HomeScreen(navController = navController)
+//                }
+//                composable("profile") {
+//                    ProfileScreen(petName = "Fluffy", navController = navController)
+//                }
+//            }
         }
     }
 }
@@ -36,8 +50,15 @@ fun PetCareAppPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            WelcomeScreen()
-//            HomeScreen()
+           WelcomeScreen()
+
+//            val navController = rememberNavController()
+//            NavHost(navController = navController, startDestination = "home") {
+//                // Define navigation routes
+//                composable("home") {
+//                    HomeScreen(navController = navController)
+//                }
+//            }
         }
     }
 }
