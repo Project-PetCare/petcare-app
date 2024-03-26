@@ -14,6 +14,6 @@ enum class HealthRecordType {
     MEDICATION,
     SYMPTOM,
     ALLERGY,
-    EXERCISE_ACTIVITY,
+    EXERCISE,
     WEIGHT_MEASUREMENT
 }
