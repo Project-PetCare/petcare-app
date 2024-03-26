@@ -32,12 +32,20 @@ class AddHealthRecordActivity : AppCompatActivity() {
                     recordDetails
                 )
                 healthRecordViewModel.addHealthRecord(operationRecord)
+
                 val veterinarianRecord = HealthRecord(
                     HealthRecordType.VETERINARIAN_VISIT,
                     Date(),
                     recordDetails
                 )
                 healthRecordViewModel.addHealthRecord(veterinarianRecord)
+
+                val medicationRecord = HealthRecord(
+                    HealthRecordType.MEDICATION,
+                    Date(),
+                    recordDetails
+                )
+                healthRecordViewModel.addHealthRecord(medicationRecord)
                 finish()
             }
         }
