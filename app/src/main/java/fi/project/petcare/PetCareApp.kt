@@ -23,18 +23,18 @@ fun PetCareApp() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-           WelcomeScreen()
-            // Create a NavHost home to profile page
-//            val navController = rememberNavController()
-//            NavHost(navController = navController, startDestination = "home") {
-//                // Define navigation routes
-//                composable("home") {
-//                    HomeScreen(navController = navController)
-//                }
-//                composable("profile") {
-//                    ProfileScreen(petName = "Fluffy", navController = navController)
-//                }
-//            }
+//           WelcomeScreen()
+//             Create a NavHost home to profile page
+            val navController = rememberNavController()
+            NavHost(navController = navController, startDestination = "home") {
+                // Define navigation routes
+                composable("home") {
+                    HomeScreen(navController = navController)
+                }
+                composable("profile") {
+                    ProfileScreen(petName = "Fluffy", navController = navController)
+                }
+            }
         }
     }
 }
@@ -50,15 +50,15 @@ fun PetCareAppPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-           WelcomeScreen()
+//           WelcomeScreen()
 
-//            val navController = rememberNavController()
-//            NavHost(navController = navController, startDestination = "home") {
-//                // Define navigation routes
-//                composable("home") {
-//                    HomeScreen(navController = navController)
-//                }
-//            }
+            val navController = rememberNavController()
+            NavHost(navController = navController, startDestination = "home") {
+                // Define navigation routes
+                composable("home") {
+                    HomeScreen(navController = navController)
+                }
+            }
         }
     }
 }
