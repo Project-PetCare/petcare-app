@@ -1,25 +1,50 @@
 package fi.project.petcare.viewmodel
 
+import android.content.Context
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialException
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import android.util.Log
+import android.widget.Toast
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fi.project.petcare.BuildConfig
+import fi.project.petcare.model.data.AuthMode
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.gotrue.ExternalAuthAction
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.builtin.Email
+import io.github.jan.supabase.exceptions.RestException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.security.MessageDigest
+import java.util.UUID
 
 class AuthViewModel: ViewModel() {
+
+    // Sign up/in bottom sheet state
+    private val _authMode = MutableStateFlow(AuthMode.LOGIN)
+    val authMode: StateFlow<AuthMode> = _authMode
+    private val _showBottomSheet = MutableStateFlow(false)
+    val showBottomSheet: StateFlow<Boolean> = _showBottomSheet
+
+    fun toggleBottomSheet(authMode: AuthMode? = null) {
+        authMode?.let { _authMode.value = it }
+        _showBottomSheet.value = !_showBottomSheet.value
+    }
 
     private val apiUrl = BuildConfig.SUPABASE_URL
     private val apiKey = BuildConfig.SUPABASE_KEY
 
-
-    val supabase = createSupabaseClient(apiUrl, apiKey) {
+    private val supabase = createSupabaseClient(apiUrl, apiKey) {
         install(Auth) {
             host = "fi.project.petcare"
             scheme = "deeplink scheme"
@@ -28,7 +53,7 @@ class AuthViewModel: ViewModel() {
     }
 
     fun signUp(userEmail: String, userPassword: String) {
-        closeBottomSheet()
+        toggleBottomSheet()
         viewModelScope.launch {
             try {
                 val user = supabase.auth.signUpWith(Email) {
@@ -43,7 +68,7 @@ class AuthViewModel: ViewModel() {
     }
 
     fun signIn(userEmail: String, userPassword: String) {
-        closeBottomSheet()
+        toggleBottomSheet()
         viewModelScope.launch {
             try {
                 val user = supabase.auth.signInWith(Email) {
@@ -58,7 +83,7 @@ class AuthViewModel: ViewModel() {
     }
 
     fun resetPassword(userEmail: String, userPassword: String) {
-        closeBottomSheet()
+        toggleBottomSheet()
         viewModelScope.launch {
             try {
                 val user = supabase.auth.resetPasswordForEmail(userEmail)
@@ -88,29 +113,72 @@ class AuthViewModel: ViewModel() {
         }
     }
 
-    enum class AuthMode {
-        LOGIN,
-        REGISTER
+    fun googleSignIn(context: Context) {
+        val credentialManager = CredentialManager.create(context)
+
+        // Generate a nonce and hash it with sha-256. Providing a nonce is optional but recommended
+        val rawNonce = UUID.randomUUID().toString() // UUID should be sufficient, but can also be any other random string.
+        val bytes = rawNonce.toByteArray()
+        val md = MessageDigest.getInstance("SHA-256")
+        val digest = md.digest(bytes)
+        val hashedNonce = digest.fold("") { str, it -> str + "%02x".format(it) } // Hashed nonce to be passed to Google sign-in
+
+
+        val setServerClientId = BuildConfig.SERVER_CLIENT_ID
+        val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
+            .setFilterByAuthorizedAccounts(false)
+            .setServerClientId(setServerClientId)
+            .setNonce(hashedNonce) // Provide the nonce if you have one
+            .build()
+
+        val request: GetCredentialRequest = GetCredentialRequest.Builder()
+            .addCredentialOption(googleIdOption)
+            .build()
+
+        viewModelScope.launch {
+            try {
+                val result = credentialManager.getCredential(
+                    request = request,
+                    context = context,
+                )
+
+                val googleIdTokenCredential = GoogleIdTokenCredential
+                    .createFrom(result.credential.data)
+
+                val googleIdToken = googleIdTokenCredential.idToken
+
+                Log.i("Google ID Token", googleIdToken)
+                Toast.makeText(context, "You have signed in!", Toast.LENGTH_SHORT).show()
+
+//                Connect to Supabase
+//                vModel.supabase.auth.signInWith(IDToken) {
+//                    idToken = googleIdToken
+//                    provider = Google
+//                    nonce = rawNonce
+//                }
+
+                // Handle successful sign-in
+            } catch (e: GetCredentialException) {
+                // Handle GetCredentialException thrown by `credentialManager.getCredential()`
+                Log.e("GetCredentialException", e.toString())
+            } catch (e: IllegalArgumentException) {
+                // Handle IllegalArgumentException thrown by `GoogleIdTokenCredential.createFrom()`
+                Log.e("GoogleIdTokenCredential", e.toString())
+            } catch (e: GoogleIdTokenParsingException) {
+                // Handle GoogleIdTokenParsingException thrown by `GoogleIdTokenCredential.createFrom()`
+                Log.e("GoogleIdTokenParsingException", e.toString())
+            } catch (e: RestException) {
+                // Handle RestException thrown by Supabase
+                Log.e("RestException", e.toString())
+            } catch (e: Exception) {
+                // Handle unknown exceptions
+                Log.e("Exception", e.toString())
+            }
+        }
     }
 
-    private val _authMode = MutableStateFlow(AuthMode.LOGIN)
-    val authMode: StateFlow<AuthMode> = _authMode
-
-    // Sign up bottom sheet
-    private val _showBottomSheet = MutableStateFlow(false)
-    val showBottomSheet: StateFlow<Boolean> = _showBottomSheet
-
-    fun openLoginSheet() {
-        _authMode.value = AuthMode.LOGIN
-        _showBottomSheet.value = !_showBottomSheet.value
+    fun passkeySignIn(context: Context) {
+        Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show()
     }
-    fun openRegisterSheet() {
-        _authMode.value = AuthMode.REGISTER
-        _showBottomSheet.value = !_showBottomSheet.value
-    }
-    fun closeBottomSheet() {
-        _showBottomSheet.value = false
-    }
-
 
 }

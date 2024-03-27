@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,12 +33,12 @@ import io.github.jan.supabase.compose.auth.ui.email.OutlinedEmailField
 import io.github.jan.supabase.compose.auth.ui.password.OutlinedPasswordField
 import io.github.jan.supabase.compose.auth.ui.password.PasswordRule
 import io.github.jan.supabase.compose.auth.ui.password.rememberPasswordRuleList
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class)
 @Composable
-fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: (email: String, password: String) -> Unit) {
+fun Register(openDialog: () -> Unit , sheetState: SheetState, onRegister: (email: String, password: String) -> Unit) {
+    val scope = rememberCoroutineScope()
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
 
@@ -46,7 +47,7 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: (email: 
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 72.dp)
+            .padding(bottom = 36.dp)
     ) {
         Text(
             text = "Create account",
@@ -92,9 +93,9 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: (email: 
                     onCheckedChange = { valid.value = it },
                 )
                 TextButton(
-                    onClick = { /*TODO: link or show terms and conditions in dialog*/ },
+                    onClick = { openDialog() },
                 ) {
-                    Text("Accept Terms and Conditions", style = MaterialTheme.typography.labelSmall)
+                    Text("Accept Terms of Service", style = MaterialTheme.typography.labelSmall)
                 }
             }
         }
@@ -119,7 +120,8 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: (email: 
 
 @OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class)
 @Composable
-fun Login(scope: CoroutineScope, sheetState: SheetState, onLogin: (email: String, password: String) -> Unit) {
+fun Login(sheetState: SheetState, onLogin: (email: String, password: String) -> Unit) {
+    val scope = rememberCoroutineScope()
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
 
@@ -128,7 +130,7 @@ fun Login(scope: CoroutineScope, sheetState: SheetState, onLogin: (email: String
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 72.dp)
+            .padding(bottom = 36.dp)
     ) {
         Text(
             text = "Sign in",
@@ -154,7 +156,7 @@ fun Login(scope: CoroutineScope, sheetState: SheetState, onLogin: (email: String
             value = password,
             onValueChange = { password = it },
             label = { Text("Password") },
-            rules = rememberPasswordRuleList(PasswordRule.minLength(3)),
+            rules = rememberPasswordRuleList(PasswordRule.minLength(6)),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
                 autoCorrect = false,

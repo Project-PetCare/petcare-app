@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Handshake
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -18,13 +21,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -32,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import fi.project.petcare.R
+import fi.project.petcare.model.data.AuthMode
 import fi.project.petcare.ui.composables.GoogleSignInButton
 import fi.project.petcare.ui.composables.Login
 import fi.project.petcare.ui.composables.Register
@@ -40,9 +48,10 @@ import fi.project.petcare.viewmodel.AuthViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WelcomeScreen(vModel: AuthViewModel = viewModel()) {
+    var openDialog by remember { mutableStateOf(false) }
+    fun toggleDialog() { openDialog = !openDialog }
     val showBottomSheet by vModel.showBottomSheet.collectAsState()
-    val scope = rememberCoroutineScope()
-    val bottomSheetState = rememberModalBottomSheetState()
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     Box(
         modifier = Modifier
@@ -81,13 +90,13 @@ fun WelcomeScreen(vModel: AuthViewModel = viewModel()) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Button(
-                        onClick = { vModel.openLoginSheet() },
+                        onClick = { vModel.toggleBottomSheet(AuthMode.LOGIN) },
                         modifier = Modifier.size(width = 160.dp, height = 58.dp)
                     ) {
                         Text(text = "Sign in")
                     }
                     Button(
-                        onClick = { vModel.openRegisterSheet() },
+                        onClick = { vModel.toggleBottomSheet(AuthMode.REGISTER) },
                         modifier = Modifier.size(width = 160.dp, height = 58.dp)
                     ) {
                         Text(text = "Join PetCare")
@@ -99,9 +108,10 @@ fun WelcomeScreen(vModel: AuthViewModel = viewModel()) {
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    GoogleSignInButton(vModel = vModel)
+                    GoogleSignInButton(onClick = vModel::googleSignIn )
+                    val context = LocalContext.current
                     OutlinedButton(
-                        onClick = { /*TODO*/}, // Sign up with passkey,
+                        onClick = { vModel.passkeySignIn(context) },
                         modifier = Modifier.size(width = 160.dp, height = 58.dp)
                     ) {
                         Text(text = "Passkey ")
@@ -114,7 +124,7 @@ fun WelcomeScreen(vModel: AuthViewModel = viewModel()) {
                     verticalArrangement = Arrangement.Center,
                 ) {
                     Text(
-                        text = "By proceeding, you agree to our Terms of Service and Privacy Policy.",
+                        text = "This footer may not be necessary here.",
                         maxLines = 2,
                         softWrap = true,
                         overflow = TextOverflow.Ellipsis,
@@ -130,18 +140,57 @@ fun WelcomeScreen(vModel: AuthViewModel = viewModel()) {
         val authState by vModel.authMode.collectAsState()
         ModalBottomSheet(
             onDismissRequest = {
-                vModel.closeBottomSheet()
+                vModel.toggleBottomSheet()
             },
             sheetState = bottomSheetState,
             content = {
-                if (authState == AuthViewModel.AuthMode.REGISTER) {
-                    Register(scope = scope, sheetState = bottomSheetState, onRegister = vModel::signUp)
+                if (authState == AuthMode.REGISTER) {
+                    Register(openDialog = ::toggleDialog, sheetState = bottomSheetState, onRegister = vModel::signUp)
                 } else {
-                    Login(scope = scope, sheetState = bottomSheetState, onLogin = vModel::signIn)
+                    Login(sheetState = bottomSheetState, onLogin = vModel::signIn)
                 }
             }
         )
     }
+
+    if (openDialog) {
+        AlertDialog(
+            onDismissRequest = { /* do nothing */ },
+            icon = { Icon(Icons.Filled.Handshake, contentDescription = null) },
+            title = {
+                Text(text = "User Agreement")
+            },
+            text = {
+                Text(
+                    text = "1. PetCare is for personal use only.\n" +
+                            "\n 2. We respect your privacy and won't share your data.\n" +
+                            "\n 3. You're responsible for your pet's info accuracy.\n" +
+                            "\n 4. Consult a vet for medical advice.\n" +
+                            "\n 5. Expect updates to improve PetCare.\n" +
+                            "\n Questions? Contact us at [contact@email.com].\n",
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        toggleDialog()
+                    }
+                ) {
+                    Text("Confirm")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        toggleDialog()
+                    }
+                ) {
+                    Text("Dismiss")
+                }
+            }
+        )
+    }
+
 }
 
 @Preview(showBackground = true, showSystemUi = true)
