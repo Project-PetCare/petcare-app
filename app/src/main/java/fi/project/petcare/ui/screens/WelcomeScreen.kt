@@ -35,9 +35,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import fi.project.petcare.R
 import fi.project.petcare.model.data.AuthMode
 import fi.project.petcare.ui.composables.GoogleSignInButton
@@ -47,7 +47,7 @@ import fi.project.petcare.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WelcomeScreen(vModel: AuthViewModel = viewModel()) {
+fun WelcomeScreen(navController: NavController, vModel: AuthViewModel = viewModel()) {
     var openDialog by remember { mutableStateOf(false) }
     fun toggleDialog() { openDialog = !openDialog }
     val showBottomSheet by vModel.showBottomSheet.collectAsState()
@@ -191,10 +191,4 @@ fun WelcomeScreen(vModel: AuthViewModel = viewModel()) {
         )
     }
 
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun WelcomeScreenPreview() {
-    WelcomeScreen()
 }
