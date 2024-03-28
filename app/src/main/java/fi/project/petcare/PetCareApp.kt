@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import fi.project.petcare.ui.screens.HomeScreen
+
 import fi.project.petcare.ui.screens.ProfileScreen
 import fi.project.petcare.ui.screens.WelcomeScreen
 import fi.project.petcare.ui.theme.PetCareTheme
@@ -58,6 +59,7 @@ fun PetCareAppPreview() {
                 composable("home") {
                     HomeScreen(navController = navController)
                 }
+
             }
         }
     }
