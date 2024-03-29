@@ -1,35 +1,38 @@
 package fi.project.petcare.ui.nav
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import fi.project.petcare.ui.screens.HomeScreen
+import fi.project.petcare.ui.screens.ProfileScreen
 import fi.project.petcare.ui.screens.WelcomeScreen
 
 @Composable
-fun NavGraph(innerPadding: PaddingValues? = null, navController: NavHostController) {
+fun NavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
         startDestination = Screen.Welcome.route
         //modifier = Modifier.padding(innerPadding)
     ) {
         composable(Screen.Welcome.route) {
-            WelcomeScreen(navController = navController)
+            WelcomeScreen(
+                onSignUpComplete = { navController.navigate(Screen.Dashboard.Home.route) }
+            )
         }
         navigation(
-            route = Screen.Home.route,
-            startDestination = Screen.Home.route
+            route = Screen.Dashboard.route,
+            startDestination = Screen.Dashboard.Home.route
         ) {
-            composable(Screen.Home.route) {
-                HomeScreen(navController = navController)
+            composable(Screen.Dashboard.Home.route) {
+                HomeScreen(
+                    onNavigateToProfile = { navController.navigate(Screen.Dashboard.PetProfile.route) },
+                    navController = navController
+                )
+            }
+            composable(Screen.Dashboard.PetProfile.route) {
+                ProfileScreen(petName = "Fluffy", navController = navController)
             }
         }
     }
