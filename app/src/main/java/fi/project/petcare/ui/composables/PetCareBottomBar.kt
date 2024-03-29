@@ -19,7 +19,7 @@ fun PetCareBottomBar(navController: NavController) {
 
         petCareDestinations.forEach { screen ->
             NavigationBarItem(
-                icon = { screen.icon?.let { Icon(imageVector = it, contentDescription = screen.route) } },
+                icon = { screen.unselectedIcon?.let { Icon(imageVector = it, contentDescription = screen.route) } },
                 label = { Text(text = screen.route) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = {
