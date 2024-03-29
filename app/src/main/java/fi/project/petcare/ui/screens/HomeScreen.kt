@@ -52,8 +52,10 @@ fun HomeScreen(navController: NavController) {
 
     )
      {
+         Spacer(modifier = Modifier.height(16.dp))
         // Top bar with text "Pets" and setting icon
         Row(
+
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -96,7 +98,7 @@ fun HomeScreen(navController: NavController) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(300.dp)
+                    .height(320.dp)
             ) {
                 // Cover photo
                 Image(

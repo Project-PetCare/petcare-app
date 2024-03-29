@@ -24,7 +24,11 @@ fun PetCareApp() {
             color = MaterialTheme.colorScheme.background
         ) {
            WelcomeScreen()
+<<<<<<< Updated upstream
             // Create a NavHost home to profile page
+=======
+//             Create a NavHost home to profile page
+>>>>>>> Stashed changes
 //            val navController = rememberNavController()
 //            NavHost(navController = navController, startDestination = "home") {
 //                // Define navigation routes
@@ -35,6 +39,10 @@ fun PetCareApp() {
 //                    ProfileScreen(petName = "Fluffy", navController = navController)
 //                }
 //            }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
         }
     }
 }
@@ -50,7 +58,11 @@ fun PetCareAppPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
+<<<<<<< Updated upstream
            WelcomeScreen()
+=======
+         WelcomeScreen()
+>>>>>>> Stashed changes
 
 //            val navController = rememberNavController()
 //            NavHost(navController = navController, startDestination = "home") {
@@ -58,6 +70,11 @@ fun PetCareAppPreview() {
 //                composable("home") {
 //                    HomeScreen(navController = navController)
 //                }
+<<<<<<< Updated upstream
+=======
+//
+//
+>>>>>>> Stashed changes
 //            }
         }
     }
