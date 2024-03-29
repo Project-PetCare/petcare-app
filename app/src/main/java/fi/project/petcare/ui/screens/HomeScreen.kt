@@ -91,7 +91,6 @@ fun HomeScreen(onNavigateToProfile: () -> Unit, navController: NavController) {
                     ),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
