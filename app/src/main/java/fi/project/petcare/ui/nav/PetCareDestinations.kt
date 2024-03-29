@@ -17,13 +17,15 @@ import fi.project.petcare.ui.screens.WelcomeScreen
  */
 sealed class Screen(val route: String, val unselectedIcon: ImageVector? = null, val selectedIcon: ImageVector? = null) {
 
-    object Welcome : Screen(route = "Welcome")
-    object Home : Screen(route = "Home", unselectedIcon = Icons.Outlined.Home, selectedIcon = Icons.Filled.Home)
-    object PetProfile : Screen(route = "Profiles", unselectedIcon = Icons.Outlined.Lock, selectedIcon = Icons.Filled.Lock)
+    object Welcome : Screen(route = "welcome")
+    object Dashboard : Screen(route = "dashboard") {
+        object Home : Screen(route = "home", unselectedIcon = Icons.Outlined.Home, selectedIcon = Icons.Filled.Home)
+        object PetProfile : Screen(route = "profile", unselectedIcon = Icons.Outlined.Lock, selectedIcon = Icons.Filled.Lock)
+    }
 }
 
 // Screens to be displayed in bottom nav bar
 val petCareDestinations = listOf(
-    Screen.Home,
-    Screen.PetProfile
+    Screen.Dashboard.Home,
+    Screen.Dashboard.PetProfile
 )
