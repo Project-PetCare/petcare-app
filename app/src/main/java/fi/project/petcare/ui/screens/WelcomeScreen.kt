@@ -37,7 +37,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import fi.project.petcare.R
 import fi.project.petcare.model.data.AuthMode
 import fi.project.petcare.ui.composables.GoogleSignInButton
@@ -47,7 +46,7 @@ import fi.project.petcare.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WelcomeScreen(navController: NavController, vModel: AuthViewModel = viewModel()) {
+fun WelcomeScreen(onSignUpComplete: () -> Unit, vModel: AuthViewModel = viewModel()) {
     var openDialog by remember { mutableStateOf(false) }
     fun toggleDialog() { openDialog = !openDialog }
     val showBottomSheet by vModel.showBottomSheet.collectAsState()
@@ -111,7 +110,7 @@ fun WelcomeScreen(navController: NavController, vModel: AuthViewModel = viewMode
                     GoogleSignInButton(onClick = vModel::googleSignIn )
                     val context = LocalContext.current
                     OutlinedButton(
-                        onClick = { vModel.passkeySignIn(context) },
+                        onClick = { vModel.passkeySignIn(context); onSignUpComplete() },
                         modifier = Modifier.size(width = 160.dp, height = 58.dp)
                     ) {
                         Text(text = "Passkey ")
