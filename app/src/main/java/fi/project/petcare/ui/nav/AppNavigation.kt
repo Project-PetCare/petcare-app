@@ -10,12 +10,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navigation
 import fi.project.petcare.ui.screens.HomeScreen
 import fi.project.petcare.ui.screens.WelcomeScreen
 
 @Composable
 fun NavGraph(innerPadding: PaddingValues? = null, navController: NavHostController) {
-
     NavHost(
         navController = navController,
         startDestination = Screen.Welcome.route
@@ -24,8 +24,13 @@ fun NavGraph(innerPadding: PaddingValues? = null, navController: NavHostControll
         composable(Screen.Welcome.route) {
             WelcomeScreen(navController = navController)
         }
-        composable(Screen.Home.route) {
-            HomeScreen(navController = navController)
+        navigation(
+            route = Screen.Home.route,
+            startDestination = Screen.Home.route
+        ) {
+            composable(Screen.Home.route) {
+                HomeScreen(navController = navController)
+            }
         }
     }
 }
