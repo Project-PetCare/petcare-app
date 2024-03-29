@@ -61,15 +61,15 @@ fun HomeScreen(onNavigateToProfile: () -> Unit, navController: NavController) {
                 // Top bar with text "Pets" and setting icon
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
                         text = "Pets",
-                        style = TextStyle(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 24.sp
-                        ),
-                        modifier = Modifier.weight(1f)
+                        // If you need special style for text,
+                        // you can use MaterialTheme.typography as shown below
+                        // No need to change colors.
+                        style = MaterialTheme.typography.headlineMedium
                     )
                     Icon(imageVector = Icons.Outlined.Settings, contentDescription = "Settings")
                 }
@@ -107,8 +107,7 @@ fun HomeScreen(onNavigateToProfile: () -> Unit, navController: NavController) {
                                 .padding(bottom = 20.dp),
                             contentScale = ContentScale.Crop
                         )
-
-//pet profile details
+                        // Pet profile details
                         Column(
                             modifier = Modifier
                                 .padding(16.dp)
@@ -121,11 +120,7 @@ fun HomeScreen(onNavigateToProfile: () -> Unit, navController: NavController) {
                                 ) {
                                     Text(
                                         text = "Fluffy",
-                                        style = TextStyle(
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 20.sp,
-                                            color = Color.Black
-                                        ),
+                                        style = MaterialTheme.typography.bodyMedium,
                                         modifier = Modifier.weight(1f)
                                     )
                                     Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowRight, contentDescription = null)
@@ -142,18 +137,18 @@ fun HomeScreen(onNavigateToProfile: () -> Unit, navController: NavController) {
                                 ) {
                                     Text(
                                         text = "Type: Dog",
-                                        style = TextStyle(
-                                            fontSize = 16.sp,
-                                            color = Color.Black
-                                        )
+//                                        style = TextStyle(
+//                                            fontSize = 16.sp,
+//                                            color = Color.Black
+//                                        )
                                     )
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
                                         text = "Gender: Male",
-                                        style = TextStyle(
-                                            fontSize = 16.sp,
-                                            color = Color.Black
-                                        )
+//                                        style = TextStyle(
+//                                            fontSize = 16.sp,
+//                                            color = Color.Black
+//                                        )
                                     )
                                 }
                                 Column(
@@ -163,18 +158,18 @@ fun HomeScreen(onNavigateToProfile: () -> Unit, navController: NavController) {
                                 ) {
                                     Text(
                                         text = "Age: 3 years",
-                                        style = TextStyle(
-                                            fontSize = 16.sp,
-                                            color = Color.Black
-                                        )
+//                                        style = TextStyle(
+//                                            fontSize = 16.sp,
+//                                            color = Color.Black
+//                                        )
                                     )
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
                                         text = "Weight: 25kg",
-                                        style = TextStyle(
-                                            fontSize = 16.sp,
-                                            color = Color.Black
-                                        )
+//                                        style = TextStyle(
+//                                            fontSize = 16.sp,
+//                                            color = Color.Black
+//                                        )
                                     )
                                 }
                             }
@@ -200,22 +195,18 @@ fun HomeScreen(onNavigateToProfile: () -> Unit, navController: NavController) {
                                 .size(32.dp) // Adjust the size of the image
                         )
                         Spacer(modifier = Modifier.width(12.dp))
+                        // We may use TextButton instead of ClickableText here. You can try it.
                         ClickableText(
                             text = AnnotatedString("Medical Records"),
                             onClick = {
                                 /* Navigate to new page */
                             },
                             modifier = Modifier.weight(1f),
-                            style = TextStyle(
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 20.sp // Increase the font size
-                            )
-                        )
-//                            Icon(
-//                                painter = painterResource(id = R.drawable.arrow_icon),
-//                                contentDescription = null,
-//                                modifier = Modifier.size(20.dp) // Adjust the size of the arrow icon
+//                            style = TextStyle(
+//                                fontWeight = FontWeight.SemiBold,
+//                                fontSize = 20.sp // Increase the font size
 //                            )
+                        )
                         Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowRight, contentDescription = null)
                     }
 
@@ -244,11 +235,6 @@ fun HomeScreen(onNavigateToProfile: () -> Unit, navController: NavController) {
                                 fontSize = 20.sp // Increase the font size
                             )
                         )
-//                            Icon(
-//                                painter = painterResource(id = R.drawable.arrow_icon),
-//                                contentDescription = null,
-//                                modifier = Modifier.size(20.dp) // Adjust the size of the arrow icon
-//                            )
                         Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowRight, contentDescription = null)
                     }
 
@@ -272,16 +258,11 @@ fun HomeScreen(onNavigateToProfile: () -> Unit, navController: NavController) {
                                 /* Navigate to new page */
                             },
                             modifier = Modifier.weight(1f),
-                            style = TextStyle(
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 20.sp // Increase the font size
-                            )
-                        )
-//                            Icon(
-//                                painter = painterResource(id = R.drawable.arrow_icon),
-//                                contentDescription = null,
-//                                modifier = Modifier.size(20.dp) // Adjust the size of the arrow icon
+//                            style = TextStyle(
+//                                fontWeight = FontWeight.SemiBold,
+//                                fontSize = 20.sp // Increase the font size
 //                            )
+                        )
                         Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowRight, contentDescription = null)
                     }
                 }
@@ -330,11 +311,11 @@ fun PetIcon(imageRes: Int, text: String) {
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = text,
-            style = TextStyle(
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                color = Color.White
-            )
+//            style = TextStyle(
+//                fontWeight = FontWeight.Bold,
+//                fontSize = 16.sp,
+//                color = Color.White
+//            )
         )
     }
 }
@@ -352,10 +333,10 @@ fun PetProfile(
     ) {
         Text(
             text = "Pet Profile",
-            style = TextStyle(
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            ),
+//            style = TextStyle(
+//                fontWeight = FontWeight.Bold,
+//                fontSize = 20.sp
+//            ),
             modifier = Modifier.padding(bottom = 8.dp)
         )
         Text("Name: $petName")
@@ -380,7 +361,7 @@ fun ClickableRow(
 }
 @Composable
 fun RowItem(text: String) {
-    Text(text = "- $text", fontSize = 16.sp, color = Color.Black)
+    Text(text = "- $text")
 }
 
 
