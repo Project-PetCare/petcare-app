@@ -101,24 +101,23 @@ class AuthViewModel: ViewModel() {
         }
     }
 
-//    fun resetPassword(userEmail: String, userPassword: String) {
-//        viewModelScope.launch {
-//            try {
-//                val user = supabase.auth.resetPasswordForEmail(userEmail)
-//                Log.i("User reset password returns: ", user.toString())
-//
-//                /* TODO: Implement reset password email
-//                supabase.auth.modifyUser {
-//                    password = userPassword
-//                }
-//                */
-//
-//
-//            } catch (e: Exception) {
-//                Log.e("User reset password failed: ", e.toString())
-//            }
-//        }
-//    }
+    fun updateUser(userEmail: String?, userPassword: String?, redirectUrl: String?) {
+        viewModelScope.launch {
+            try {
+                userEmail?.let { email ->
+                    supabase.auth.resetPasswordForEmail(email)
+                }
+                userPassword?.let { newPassword ->
+                    supabase.auth.modifyUser {
+                        password = newPassword
+                    }
+                }
+            } catch (e: Exception) {
+                _authUiState.value = AuthUiState.Error(message = "Something went wrong. Please try again later.")
+                Log.e("User reset password failed: ", e.toString())
+            }
+        }
+    }
 
     fun signOut() {
         _authUiState.value = AuthUiState.Loading
