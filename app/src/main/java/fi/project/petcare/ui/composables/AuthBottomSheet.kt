@@ -8,10 +8,14 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Handshake
+import androidx.compose.material.icons.filled.Password
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -132,10 +136,25 @@ fun Register(authState: AuthUiState, openDialog: () -> Unit , onRegister: (email
 
 @OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class)
 @Composable
-fun Login(authState: AuthUiState, onLogin: (email: String, password: String) -> Unit) {
+fun Login(
+    authState: AuthUiState,
+    onLogin: (email: String, password: String) -> Unit
+) {
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     val state = LocalAuthState.current
+    var forgotPasswordDialog by remember { mutableStateOf(false) }
+    fun toggleForgotPasswordDialog() { forgotPasswordDialog = !forgotPasswordDialog }
+
+    if (forgotPasswordDialog) {
+        InfoDialog(
+            icon = { Icon(Icons.Filled.Password, contentDescription = "Reset password") },
+            title = "Reset password",
+            content = "1. Make sure your email in the previous step is correct.\n \n 2. Click again in Forgot password?\n\n 3. Click on confirm button.\n\n We will send you a password reset link to your email.",
+            toggleDialog = ::toggleForgotPasswordDialog,
+            onConfirm = { /* Call updateUser from vModel */ }
+        )
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -184,15 +203,11 @@ fun Login(authState: AuthUiState, onLogin: (email: String, password: String) -> 
             ),
             shape = MaterialTheme.shapes.large,
         )
-        Text(
-            text = "Make sure your email is correct.",
-            style = MaterialTheme.typography.labelSmall
-        )
         TextButton(
-            onClick = { /*TODO*/ },
+            onClick = { toggleForgotPasswordDialog() },
             modifier = Modifier.padding(bottom = 16.dp)
         ) {
-            Text(text = "Reset password", color = MaterialTheme.colorScheme.primary)
+            Text(text = "Forgot password?", color = MaterialTheme.colorScheme.primary)
         }
         Button(
             onClick = { onLogin(email, password) },
