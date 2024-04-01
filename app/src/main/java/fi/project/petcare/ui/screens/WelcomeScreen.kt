@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import fi.project.petcare.R
 import fi.project.petcare.ui.composables.GoogleSignInButton
-import fi.project.petcare.ui.composables.InfoDialog
 import fi.project.petcare.ui.composables.Login
 import fi.project.petcare.ui.composables.Register
 import fi.project.petcare.viewmodel.AuthUiState
@@ -44,9 +43,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WelcomeScreen(onUserAuthenticated: () -> Unit, vModel: AuthViewModel = viewModel()) {
-    var openDialog by remember { mutableStateOf(false) }
-    fun toggleDialog() { openDialog = !openDialog }
-
     var showSheet by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var isLogin by remember { mutableStateOf(false) }
@@ -151,7 +147,6 @@ fun WelcomeScreen(onUserAuthenticated: () -> Unit, vModel: AuthViewModel = viewM
                     if (!isLogin) {
                         Register(
                             authState = authState,
-                            openDialog = ::toggleDialog,
                             onRegister = vModel::signUp
                         )
                     } else {
@@ -175,8 +170,5 @@ fun WelcomeScreen(onUserAuthenticated: () -> Unit, vModel: AuthViewModel = viewM
             }
         }
 
-        if (openDialog) {
-            InfoDialog(toggleDialog = ::toggleDialog)
-        }
     }
 }

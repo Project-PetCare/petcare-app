@@ -43,11 +43,27 @@ import io.github.jan.supabase.compose.auth.ui.password.rememberPasswordRuleList
 
 @OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class)
 @Composable
-fun Register(authState: AuthUiState, openDialog: () -> Unit , onRegister: (email: String, password: String) -> Unit) {
+fun Register(authState: AuthUiState, onRegister: (email: String, password: String) -> Unit) {
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-
     val state = LocalAuthState.current
+    var agreementDialog by remember { mutableStateOf(false) }
+    fun toggleDialog() { agreementDialog = !agreementDialog }
+
+    if (agreementDialog) {
+        InfoDialog(
+            icon = { Icon(Icons.Filled.Handshake, contentDescription = "Agreement") },
+            title = "User Agreement",
+            content = "1. PetCare is for personal use only.\n" +
+                    "\n 2. We respect your privacy and won't share your data.\n" +
+                    "\n 3. You're responsible for your pet's info accuracy.\n" +
+                    "\n 4. Consult a vet for medical advice.\n" +
+                    "\n 5. Expect updates to improve PetCare.\n" +
+                    "\n Questions? Contact us at petcare@gmail.com.\n",
+            toggleDialog = ::toggleDialog,
+            onConfirm = { /* do nothing */ }
+        )
+    }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -106,7 +122,7 @@ fun Register(authState: AuthUiState, openDialog: () -> Unit , onRegister: (email
                     onCheckedChange = { valid.value = it },
                 )
                 TextButton(
-                    onClick = { openDialog() },
+                    onClick = { toggleDialog() },
                 ) {
                     Text("Accept Terms of Service", style = MaterialTheme.typography.labelSmall)
                 }
