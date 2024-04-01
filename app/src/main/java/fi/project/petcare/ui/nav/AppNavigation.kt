@@ -18,7 +18,7 @@ fun NavGraph(navController: NavHostController) {
     ) {
         composable(Screen.Welcome.route) {
             WelcomeScreen(
-                onSignUpComplete = { navController.navigate(Screen.Dashboard.Home.route) }
+                onUserAuthenticated = { navController.navigate(Screen.Dashboard.Home.route) }
             )
         }
         navigation(
