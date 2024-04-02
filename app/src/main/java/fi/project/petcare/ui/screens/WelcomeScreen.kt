@@ -4,10 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -31,7 +33,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import fi.project.petcare.R
 import fi.project.petcare.ui.composables.GoogleSignInButton
 import fi.project.petcare.ui.composables.Login
@@ -90,16 +91,21 @@ fun WelcomeScreen(vModel: AuthViewModel, onUserAuthenticated: () -> Unit) {
                                 isLogin = true
                                 showSheet = true
                             },
-                            modifier = Modifier.size(width = 160.dp, height = 58.dp)
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(58.dp)
                         ) {
                             Text(text = "Sign in")
                         }
+                        Spacer(modifier = Modifier.width(16.dp))
                         Button(
                             onClick = {
                                 isLogin = false
                                 showSheet = true
                             },
-                            modifier = Modifier.size(width = 160.dp, height = 58.dp)
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(58.dp)
                         ) {
                             Text(text = "Join PetCare")
                         }
@@ -110,10 +116,18 @@ fun WelcomeScreen(vModel: AuthViewModel, onUserAuthenticated: () -> Unit) {
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        GoogleSignInButton( onClick = vModel::googleSignIn )
+                        GoogleSignInButton(
+                            onClick = vModel::googleSignIn,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(58.dp)
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
                         OutlinedButton(
                             onClick = { onUserAuthenticated() },
-                            modifier = Modifier.size(width = 160.dp, height = 58.dp)
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(58.dp)
                         ) {
                             Text(text = "Passkey ")
                             Icon( painterResource(id = R.drawable.ic_passkey), contentDescription = "Passkey")
