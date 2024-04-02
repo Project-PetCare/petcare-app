@@ -9,14 +9,11 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fi.project.petcare.BuildConfig
-import fi.project.petcare.model.data.AuthMode
 import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.exceptions.BadRequestRestException
 import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.gotrue.ExternalAuthAction
 import io.github.jan.supabase.gotrue.auth
@@ -28,18 +25,18 @@ import kotlinx.coroutines.launch
 import java.security.MessageDigest
 import java.util.UUID
 
+sealed class AuthUiState {
+    object Unauthenticated : AuthUiState()
+    object Authenticated : AuthUiState()
+    object Verifying : AuthUiState()
+    object Loading : AuthUiState()
+    data class Error(val message: String) : AuthUiState()
+}
+
 class AuthViewModel: ViewModel() {
 
-    // Sign up/in bottom sheet state
-    private val _authMode = MutableStateFlow(AuthMode.LOGIN)
-    val authMode: StateFlow<AuthMode> = _authMode
-    private val _showBottomSheet = MutableStateFlow(false)
-    val showBottomSheet: StateFlow<Boolean> = _showBottomSheet
-
-    fun toggleBottomSheet(authMode: AuthMode? = null) {
-        authMode?.let { _authMode.value = it }
-        _showBottomSheet.value = !_showBottomSheet.value
-    }
+    private val _authUiState = MutableStateFlow<AuthUiState>(AuthUiState.Unauthenticated)
+    val authUiState: StateFlow<AuthUiState> = _authUiState
 
     private val apiUrl = BuildConfig.SUPABASE_URL
     private val apiKey = BuildConfig.SUPABASE_KEY
@@ -53,7 +50,7 @@ class AuthViewModel: ViewModel() {
     }
 
     fun signUp(userEmail: String, userPassword: String) {
-        toggleBottomSheet()
+        _authUiState.value = AuthUiState.Loading
         viewModelScope.launch {
             try {
                 val user = supabase.auth.signUpWith(Email) {
@@ -61,14 +58,19 @@ class AuthViewModel: ViewModel() {
                     password = userPassword
                 }
                 Log.i("User registered returns: ", user.toString())
+//                _authUiState.value = AuthUiState.Verifying
+                _authUiState.value = AuthUiState.Authenticated
             } catch (e: Exception) {
                 Log.e("User registration failed: ", e.toString())
+                _authUiState.value = AuthUiState.Error(message = "Something went wrong. Please try again later.")
             }
         }
     }
 
+//    private var attempts = 3 // Maximum number of failed attempts. May be changed in the future
+
     fun signIn(userEmail: String, userPassword: String) {
-        toggleBottomSheet()
+        _authUiState.value = AuthUiState.Loading
         viewModelScope.launch {
             try {
                 val user = supabase.auth.signInWith(Email) {
@@ -76,43 +78,62 @@ class AuthViewModel: ViewModel() {
                     password = userPassword
                 }
                 Log.i("User signed in returns: ", user.toString())
+                _authUiState.value = AuthUiState.Authenticated
+            } catch (e: BadRequestRestException) {
+                if (e.message?.contains("Email not confirmed") == true) {
+                    _authUiState.value = AuthUiState.Error("Please confirm your email first.")
+                } else if (e.message?.contains("Invalid login credentials") == true) {
+                    _authUiState.value = AuthUiState.Error("Wrong email or password.")
+                }
+                Log.e("Exception: ", e.toString())
+
+                /* TODO: Implement login attempts
+                attempts--
+                if (attempts == 0) {
+                    _authUiState.value = AuthUiState.Error("Please try again later.")
+                    return@launch
+                }
+                 */
             } catch (e: Exception) {
                 Log.e("User sign in failed: ", e.toString())
+                _authUiState.value = AuthUiState.Error(e.toString())
             }
         }
     }
 
-    fun resetPassword(userEmail: String, userPassword: String) {
-        toggleBottomSheet()
+    fun updateUser(userEmail: String?, userPassword: String?, redirectUrl: String?) {
         viewModelScope.launch {
             try {
-                val user = supabase.auth.resetPasswordForEmail(userEmail)
-                Log.i("User reset password returns: ", user.toString())
-
-                /* TODO: Implement reset password email
-                supabase.auth.modifyUser {
-                    password = userPassword
+                userEmail?.let { email ->
+                    supabase.auth.resetPasswordForEmail(email)
                 }
-                */
-
-
+                userPassword?.let { newPassword ->
+                    supabase.auth.modifyUser {
+                        password = newPassword
+                    }
+                }
             } catch (e: Exception) {
+                _authUiState.value = AuthUiState.Error(message = "Something went wrong. Please try again later.")
                 Log.e("User reset password failed: ", e.toString())
             }
         }
     }
 
     fun signOut() {
+        _authUiState.value = AuthUiState.Loading
         viewModelScope.launch {
             try {
                 val user = supabase.auth.signOut()
                 Log.i("User signed out returns: ", user.toString())
+                _authUiState.value = AuthUiState.Unauthenticated
             } catch (e: Exception) {
                 Log.e("User sign out failed: ", e.toString())
+                _authUiState.value = AuthUiState.Error(message = "Something went wrong. Please try again later.")
             }
         }
     }
 
+    // Passing the context to the viewModel may lead to memory leak. REVIEW THIS!!!
     fun googleSignIn(context: Context) {
         val credentialManager = CredentialManager.create(context)
 
@@ -177,8 +198,8 @@ class AuthViewModel: ViewModel() {
         }
     }
 
-    fun passkeySignIn(context: Context) {
-        Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show()
+    fun passkeySignIn() {
+        // TODO
     }
 
 }
