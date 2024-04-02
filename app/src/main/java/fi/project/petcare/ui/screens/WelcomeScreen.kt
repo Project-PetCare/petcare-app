@@ -35,7 +35,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import fi.project.petcare.R
@@ -47,7 +46,7 @@ import fi.project.petcare.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WelcomeScreen(vModel: AuthViewModel = viewModel()) {
+fun WelcomeScreen(onSignUpComplete: () -> Unit, vModel: AuthViewModel = viewModel()) {
     var openDialog by remember { mutableStateOf(false) }
     fun toggleDialog() { openDialog = !openDialog }
     val showBottomSheet by vModel.showBottomSheet.collectAsState()
@@ -111,7 +110,7 @@ fun WelcomeScreen(vModel: AuthViewModel = viewModel()) {
                     GoogleSignInButton(onClick = vModel::googleSignIn )
                     val context = LocalContext.current
                     OutlinedButton(
-                        onClick = { vModel.passkeySignIn(context) },
+                        onClick = { vModel.passkeySignIn(context); onSignUpComplete() },
                         modifier = Modifier.size(width = 160.dp, height = 58.dp)
                     ) {
                         Text(text = "Passkey ")
@@ -191,10 +190,4 @@ fun WelcomeScreen(vModel: AuthViewModel = viewModel()) {
         )
     }
 
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun WelcomeScreenPreview() {
-    WelcomeScreen()
 }
