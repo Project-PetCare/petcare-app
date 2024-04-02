@@ -6,8 +6,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import fi.project.petcare.ui.composables.Dashboard
 import fi.project.petcare.ui.screens.HomeScreen
 import fi.project.petcare.ui.screens.ProfileScreen
+import fi.project.petcare.ui.screens.SettingsScreen
 import fi.project.petcare.ui.screens.WelcomeScreen
 import fi.project.petcare.viewmodel.AuthViewModel
 
@@ -30,13 +32,25 @@ fun NavGraph(navController: NavHostController) {
             startDestination = Screen.Dashboard.Home.route
         ) {
             composable(Screen.Dashboard.Home.route) {
-                HomeScreen(
-                    onNavigateToProfile = { navController.navigate(Screen.Dashboard.PetProfile.route) },
+                Dashboard(
+                    onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
                     navController = navController
-                )
+                ) {
+                    HomeScreen(
+                        onNavigateToProfile = { navController.navigate(Screen.Dashboard.PetProfile.route) }
+                    )
+                }
             }
             composable(Screen.Dashboard.PetProfile.route) {
-                ProfileScreen(petName = "Fluffy", navController = navController)
+                Dashboard(
+                    onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
+                    navController = navController
+                ) {
+                    ProfileScreen(petName = "Fluffy", navController = navController)
+                }
+            }
+            composable(Screen.Settings.route) {
+                SettingsScreen(onNavigateToHome = { navController.navigate(Screen.Dashboard.Home.route) })
             }
         }
     }
