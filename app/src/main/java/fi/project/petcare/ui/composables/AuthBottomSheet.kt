@@ -6,16 +6,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Handshake
+import androidx.compose.material.icons.filled.Password
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SheetState
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import fi.project.petcare.viewmodel.AuthUiState
 import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.compose.auth.ui.FormComponent
 import io.github.jan.supabase.compose.auth.ui.LocalAuthState
@@ -32,21 +40,35 @@ import io.github.jan.supabase.compose.auth.ui.email.OutlinedEmailField
 import io.github.jan.supabase.compose.auth.ui.password.OutlinedPasswordField
 import io.github.jan.supabase.compose.auth.ui.password.PasswordRule
 import io.github.jan.supabase.compose.auth.ui.password.rememberPasswordRuleList
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class)
 @Composable
-fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: (email: String, password: String) -> Unit) {
+fun Register(authState: AuthUiState, onRegister: (email: String, password: String) -> Unit) {
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-
     val state = LocalAuthState.current
+    var agreementDialog by remember { mutableStateOf(false) }
+    fun toggleDialog() { agreementDialog = !agreementDialog }
+
+    if (agreementDialog) {
+        InfoDialog(
+            icon = { Icon(Icons.Filled.Handshake, contentDescription = "Agreement") },
+            title = "User Agreement",
+            content = "1. PetCare is for personal use only.\n" +
+                    "\n 2. We respect your privacy and won't share your data.\n" +
+                    "\n 3. You're responsible for your pet's info accuracy.\n" +
+                    "\n 4. Consult a vet for medical advice.\n" +
+                    "\n 5. Expect updates to improve PetCare.\n" +
+                    "\n Questions? Contact us at petcare@gmail.com.\n",
+            toggleDialog = ::toggleDialog,
+            onConfirm = { /* do nothing */ }
+        )
+    }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 72.dp)
+            .padding(bottom = 36.dp)
     ) {
         Text(
             text = "Create account",
@@ -56,6 +78,15 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: (email: 
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 72.dp, vertical = 16.dp)
         )
+        val snackbarHostState = remember { SnackbarHostState() }
+        SnackbarHost(hostState = snackbarHostState)
+        if (authState is AuthUiState.Error) {
+            LaunchedEffect(key1 = authState.message) {
+                snackbarHostState.showSnackbar(
+                    message = authState.message,
+                )
+            }
+        }
         OutlinedEmailField(
             value = email,
             onValueChange = { email = it },
@@ -67,7 +98,6 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: (email: 
                 imeAction = ImeAction.Next,
             ),
             shape = MaterialTheme.shapes.large,
-            modifier = Modifier.imePadding()
         )
         OutlinedPasswordField(
             value = password,
@@ -82,7 +112,7 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: (email: 
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.imePadding()
         )
-        FormComponent("accept_terms") { valid ->
+        FormComponent(key = "accept_terms") { valid ->
             Row (
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(bottom = 16.dp)
@@ -92,19 +122,15 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: (email: 
                     onCheckedChange = { valid.value = it },
                 )
                 TextButton(
-                    onClick = { /*TODO: link or show terms and conditions in dialog*/ },
+                    onClick = { toggleDialog() },
                 ) {
-                    Text("Accept Terms and Conditions", style = MaterialTheme.typography.labelSmall)
+                    Text("Accept Terms of Service", style = MaterialTheme.typography.labelSmall)
                 }
             }
         }
         Button(
             onClick = {
-                scope.launch { sheetState.hide() }.invokeOnCompletion {
-                    if (!sheetState.isVisible) run {
-                        onRegister(email, password)
-                    }
-                }
+                onRegister(email, password)
             },
             enabled = state.validForm,
             modifier = Modifier
@@ -112,23 +138,45 @@ fun Register(scope: CoroutineScope, sheetState: SheetState, onRegister: (email: 
                 .padding(horizontal = 64.dp)
                 .height(58.dp)
         ) {
-            Text("Sign up")
+            if (authState is AuthUiState.Loading) {
+                LoadingIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            } else {
+                Text("Sign up")
+            }
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class)
 @Composable
-fun Login(scope: CoroutineScope, sheetState: SheetState, onLogin: (email: String, password: String) -> Unit) {
+fun Login(
+    authState: AuthUiState,
+    onLogin: (email: String, password: String) -> Unit
+) {
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-
     val state = LocalAuthState.current
+    var forgotPasswordDialog by remember { mutableStateOf(false) }
+    fun toggleForgotPasswordDialog() { forgotPasswordDialog = !forgotPasswordDialog }
+
+    if (forgotPasswordDialog) {
+        InfoDialog(
+            icon = { Icon(Icons.Filled.Password, contentDescription = "Reset password") },
+            title = "Reset password",
+            content = "1. Make sure your email in the previous step is correct.\n \n 2. Click again in Forgot password?\n\n 3. Click on confirm button.\n\n We will send you a password reset link to your email.",
+            toggleDialog = ::toggleForgotPasswordDialog,
+            onConfirm = { /* Call updateUser from vModel */ }
+        )
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 72.dp)
+            .padding(bottom = 36.dp)
     ) {
         Text(
             text = "Sign in",
@@ -138,6 +186,15 @@ fun Login(scope: CoroutineScope, sheetState: SheetState, onLogin: (email: String
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 72.dp, vertical = 16.dp)
         )
+        val snackbarHostState = remember { SnackbarHostState() }
+        SnackbarHost(hostState = snackbarHostState)
+        if (authState is AuthUiState.Error) {
+            LaunchedEffect(key1 = authState.message) {
+                snackbarHostState.showSnackbar(
+                    message = authState.message,
+                )
+            }
+        }
         OutlinedEmailField(
             value = email,
             onValueChange = { email = it },
@@ -154,36 +211,36 @@ fun Login(scope: CoroutineScope, sheetState: SheetState, onLogin: (email: String
             value = password,
             onValueChange = { password = it },
             label = { Text("Password") },
-            rules = rememberPasswordRuleList(PasswordRule.minLength(3)),
+            rules = rememberPasswordRuleList(PasswordRule.minLength(6)),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
                 autoCorrect = false,
                 imeAction = ImeAction.Done
             ),
             shape = MaterialTheme.shapes.large,
-            modifier = Modifier.imePadding()
         )
         TextButton(
-            onClick = { /*TODO*/ },
+            onClick = { toggleForgotPasswordDialog() },
             modifier = Modifier.padding(bottom = 16.dp)
         ) {
             Text(text = "Forgot password?", color = MaterialTheme.colorScheme.primary)
         }
         Button(
-            onClick = {
-                scope.launch { sheetState.hide() }.invokeOnCompletion {
-                    if (!sheetState.isVisible) run {
-                        onLogin(email, password)
-                    }
-                }
-            },
+            onClick = { onLogin(email, password) },
             enabled = state.validForm,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 64.dp)
                 .height(58.dp),
         ) {
-            Text("Log in")
+            if (authState is AuthUiState.Loading) {
+                LoadingIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            } else {
+                Text("Log in")
+            }
         }
     }
 }
