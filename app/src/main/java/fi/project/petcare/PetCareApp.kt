@@ -24,19 +24,3 @@ fun PetCareApp() {
         }
     }
 }
-
-@Preview
-@Composable
-fun PetCareAppPreview() {
-    PetCareTheme (
-        darkTheme = true,
-        dynamicColor = false
-    ) {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            PetCareApp()
-        }
-    }
-}

@@ -42,7 +42,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WelcomeScreen(onUserAuthenticated: () -> Unit, vModel: AuthViewModel = viewModel()) {
+fun WelcomeScreen(vModel: AuthViewModel, onUserAuthenticated: () -> Unit) {
     var showSheet by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var isLogin by remember { mutableStateOf(false) }
