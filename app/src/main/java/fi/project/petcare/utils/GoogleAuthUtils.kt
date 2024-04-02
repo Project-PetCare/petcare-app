@@ -5,13 +5,14 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import java.security.MessageDigest
 import java.util.UUID
 
-
-fun generateHashedNonce(): String {
+// Generate a nonce and hash it with sha-256. Providing a nonce is optional but recommended
+fun generateHashedNonce(): Pair<String, String> {
     val rawNonce = UUID.randomUUID().toString()
     val bytes = rawNonce.toByteArray()
     val md = MessageDigest.getInstance("SHA-256")
     val digest = md.digest(bytes)
-    return digest.fold("") { str, it -> str + "%02x".format(it) }
+    val hashedNonce = digest.fold("") { str, it -> str + "%02x".format(it) }
+    return Pair(rawNonce, hashedNonce)
 }
 
 fun buildGoogleSignInRequest(serverClientId: String, hashedNonce: String): GetCredentialRequest {
