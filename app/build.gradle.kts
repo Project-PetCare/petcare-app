@@ -77,12 +77,9 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-<<<<<<< HEAD
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-=======
+    //implementation(libs.androidx.appcompat)
+    //implementation(libs.material)
     implementation(libs.androidx.navigation.compose)
->>>>>>> main
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
