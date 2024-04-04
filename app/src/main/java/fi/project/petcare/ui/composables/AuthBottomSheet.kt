@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
@@ -34,6 +33,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import fi.project.petcare.viewmodel.AuthUiState
 import io.github.jan.supabase.annotations.SupabaseExperimental
+import io.github.jan.supabase.annotations.SupabaseInternal
 import io.github.jan.supabase.compose.auth.ui.FormComponent
 import io.github.jan.supabase.compose.auth.ui.LocalAuthState
 import io.github.jan.supabase.compose.auth.ui.email.OutlinedEmailField
@@ -91,7 +91,6 @@ fun Register(authState: AuthUiState, onRegister: (email: String, password: Strin
             value = email,
             onValueChange = { email = it },
             label = { Text("E-Mail") },
-            mandatory = email.isNotBlank(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 autoCorrect = false,
@@ -103,14 +102,19 @@ fun Register(authState: AuthUiState, onRegister: (email: String, password: Strin
             value = password,
             onValueChange = { password = it },
             label = { Text("Password") },
-            rules = rememberPasswordRuleList(PasswordRule.minLength(8), PasswordRule.containsSpecialCharacter(), PasswordRule.containsDigit(), PasswordRule.containsLowercase(), PasswordRule.containsUppercase()),
+            rules = rememberPasswordRuleList(
+                PasswordRule.minLength(8),
+                PasswordRule.containsSpecialCharacter(),
+                PasswordRule.containsDigit(),
+                PasswordRule.containsLowercase(),
+                PasswordRule.containsUppercase()
+            ),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
                 autoCorrect = false,
                 imeAction = ImeAction.Done
             ),
             shape = MaterialTheme.shapes.large,
-            modifier = Modifier.imePadding()
         )
         FormComponent(key = "accept_terms") { valid ->
             Row (
@@ -141,7 +145,7 @@ fun Register(authState: AuthUiState, onRegister: (email: String, password: Strin
             if (authState is AuthUiState.Loading) {
                 LoadingIndicator(
                     modifier = Modifier.size(24.dp),
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             } else {
                 Text("Sign up")
@@ -150,7 +154,7 @@ fun Register(authState: AuthUiState, onRegister: (email: String, password: Strin
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class)
+@OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class, SupabaseInternal::class)
 @Composable
 fun Login(
     authState: AuthUiState,
@@ -158,7 +162,12 @@ fun Login(
 ) {
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    val state = LocalAuthState.current
+
+    val formState = LocalAuthState.current
+    formState.remove(key = "accept_terms")
+    formState.remove(key = "email")
+    formState.remove(key = "password")
+
     var forgotPasswordDialog by remember { mutableStateOf(false) }
     fun toggleForgotPasswordDialog() { forgotPasswordDialog = !forgotPasswordDialog }
 
@@ -199,7 +208,6 @@ fun Login(
             value = email,
             onValueChange = { email = it },
             label = { Text("E-Mail") },
-            mandatory = email.isNotBlank(), //once an email is entered, it is mandatory. (which enable validation)
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 autoCorrect = false,
@@ -227,7 +235,7 @@ fun Login(
         }
         Button(
             onClick = { onLogin(email, password) },
-            enabled = state.validForm,
+            enabled = formState.validForm,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 64.dp)
@@ -236,7 +244,7 @@ fun Login(
             if (authState is AuthUiState.Loading) {
                 LoadingIndicator(
                     modifier = Modifier.size(24.dp),
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             } else {
                 Text("Log in")
