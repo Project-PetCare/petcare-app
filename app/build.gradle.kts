@@ -88,6 +88,7 @@ dependencies {
 
     // Credentials manager and sign in with google
     implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
     // Supabase libraries
     implementation(platform(libs.bom))

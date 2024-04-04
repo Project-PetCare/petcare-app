@@ -15,14 +15,15 @@ fun generateHashedNonce(): Pair<String, String> {
     return Pair(rawNonce, hashedNonce)
 }
 
-fun buildGoogleSignInRequest(serverClientId: String, hashedNonce: String): GetCredentialRequest {
-    val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
-        .setFilterByAuthorizedAccounts(false)
+fun buildGoogleSignInRequest(alreadyUser: Boolean, autoSelectAccount: Boolean, serverClientId: String, hashedNonce: String): GetCredentialRequest {
+    val googleIdOptions: GetGoogleIdOption = GetGoogleIdOption.Builder()
+        .setFilterByAuthorizedAccounts(alreadyUser)
+        .setAutoSelectEnabled(autoSelectAccount)
         .setServerClientId(serverClientId)
         .setNonce(hashedNonce)
         .build()
 
     return GetCredentialRequest.Builder()
-        .addCredentialOption(googleIdOption)
+        .addCredentialOption(googleIdOptions)
         .build()
 }
