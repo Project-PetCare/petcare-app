@@ -80,7 +80,7 @@ fun Register(authState: AuthUiState, onRegister: (email: String, password: Strin
         )
         val snackbarHostState = remember { SnackbarHostState() }
         SnackbarHost(hostState = snackbarHostState)
-        if (authState is AuthUiState.Error) {
+        if (authState is AuthUiState.Error && authState.messageId == 1) {
             LaunchedEffect(key1 = authState.message) {
                 snackbarHostState.showSnackbar(
                     message = authState.message,
@@ -197,7 +197,7 @@ fun Login(
         )
         val snackbarHostState = remember { SnackbarHostState() }
         SnackbarHost(hostState = snackbarHostState)
-        if (authState is AuthUiState.Error) {
+        if (authState is AuthUiState.Error && authState.messageId == 2) {
             LaunchedEffect(key1 = authState.message) {
                 snackbarHostState.showSnackbar(
                     message = authState.message,
