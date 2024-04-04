@@ -79,7 +79,11 @@ fun Register(authState: AuthUiState, onRegister: (email: String, password: Strin
             modifier = Modifier.padding(horizontal = 72.dp, vertical = 16.dp)
         )
         val snackbarHostState = remember { SnackbarHostState() }
-        SnackbarHost(hostState = snackbarHostState)
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.padding(vertical = 0.dp, horizontal = 36.dp)
+
+        )
         if (authState is AuthUiState.Error && authState.messageId == 1) {
             LaunchedEffect(key1 = authState.message) {
                 snackbarHostState.showSnackbar(
@@ -196,7 +200,10 @@ fun Login(
             modifier = Modifier.padding(horizontal = 72.dp, vertical = 16.dp)
         )
         val snackbarHostState = remember { SnackbarHostState() }
-        SnackbarHost(hostState = snackbarHostState)
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.padding(vertical = 0.dp, horizontal = 36.dp)
+        )
         if (authState is AuthUiState.Error && authState.messageId == 2) {
             LaunchedEffect(key1 = authState.message) {
                 snackbarHostState.showSnackbar(
