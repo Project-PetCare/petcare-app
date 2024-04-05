@@ -71,3 +71,141 @@ val settingsList = listOf(
     )
 )
 
+@Composable
+fun SettingSubItem(
+    subOptions: List<SettingOption>?,
+    isSelectedState: MutableState<Boolean>
+) {
+    val vModel: AuthViewModel = viewModel()
+
+    Surface(
+        tonalElevation = if (isSelectedState.value) 3.dp else 0.dp,
+        shadowElevation = if (isSelectedState.value) 3.dp else 0.dp,
+        modifier = Modifier
+            .clickable {
+                when (subOptions?.get(0)?.title) {
+                    "Sign out" -> {
+                        vModel.signOut()
+                    }
+                }
+            }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+        ) {
+            subOptions?.forEach { subOption ->
+                Row (
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 38.dp, vertical = 16.dp)
+                ) {
+                    Text(
+                        text = subOption.title,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    Text(
+                        text = subOption.subtitle ?: "",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun SettingItem(
+    setting: SettingOption,
+) {
+    val isSelectedState = remember { mutableStateOf(setting.isSelected) }
+    Surface(
+        tonalElevation = if (isSelectedState.value) 6.dp else 0.dp,
+        shadowElevation = if (isSelectedState.value) 6.dp else 0.dp,
+        modifier = Modifier
+            .clickable {
+                isSelectedState.value = !isSelectedState.value
+            }
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            setting.icon?.let {
+                Icon(
+                    imageVector = it,
+                    contentDescription = setting.title,
+                    modifier = Modifier.padding(end = 16.dp)
+                )
+            }
+            Column {
+                Text(
+                    text = setting.title,
+                    style = MaterialTheme.typography.headlineSmall
+                )
+                if (!isSelectedState.value) {
+                    Text(
+                        text = setting.subtitle ?: "",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+        }
+    }
+    if (isSelectedState.value) {
+        SettingSubItem(setting.subOptions, isSelectedState)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsScreen(
+    onNavigateBack: () -> Unit,
+    settingsOptions: List<SettingOption>? = settingsList
+) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+
+    Scaffold(
+        topBar = {
+            LargeTopAppBar(
+                title = {
+                    Text(
+                        text = "Settings",
+                        maxLines = 1,
+                        style = MaterialTheme.typography.displaySmall,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { onNavigateBack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                scrollBehavior = scrollBehavior
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
+        ) {
+            settingsList.forEach { option ->
+                SettingItem(setting = option)
+            }
+        }
+    }
+}
