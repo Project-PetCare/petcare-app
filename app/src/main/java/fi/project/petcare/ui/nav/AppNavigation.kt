@@ -50,7 +50,7 @@ fun NavGraph(navController: NavHostController) {
                 }
             }
             composable(Screen.Settings.route) {
-                SettingsScreen(onNavigateToHome = { navController.navigate(Screen.Dashboard.Home.route) })
+                SettingsScreen( onNavigateBack = { navController.navigate(Screen.Dashboard.Home.route) })
             }
         }
     }
