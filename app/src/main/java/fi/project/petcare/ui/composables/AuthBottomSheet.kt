@@ -1,5 +1,6 @@
 package fi.project.petcare.ui.composables
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -82,8 +84,12 @@ fun Register(authState: AuthUiState, onRegister: (email: String, password: Strin
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier.padding(vertical = 0.dp, horizontal = 36.dp)
-
-        )
+        ) {
+            Snackbar(
+                snackbarData = it,
+                containerColor = MaterialTheme.colorScheme.onErrorContainer
+            )
+        }
         if (authState is AuthUiState.Error && authState.messageId == 1) {
             LaunchedEffect(key1 = authState.message) {
                 snackbarHostState.showSnackbar(
@@ -203,7 +209,12 @@ fun Login(
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier.padding(vertical = 0.dp, horizontal = 36.dp)
-        )
+        ) {
+            Snackbar(
+                snackbarData = it,
+                containerColor = MaterialTheme.colorScheme.onErrorContainer
+            )
+        }
         if (authState is AuthUiState.Error && authState.messageId == 2) {
             LaunchedEffect(key1 = authState.message) {
                 snackbarHostState.showSnackbar(
