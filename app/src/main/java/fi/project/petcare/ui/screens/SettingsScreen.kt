@@ -32,11 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import fi.project.petcare.ui.theme.PetCareTheme
-import fi.project.petcare.viewmodel.AuthViewModel
 
 data class SettingOption(
     val title: String,
@@ -74,10 +70,9 @@ val settingsList = listOf(
 @Composable
 fun SettingSubItem(
     subOptions: List<SettingOption>?,
-    isSelectedState: MutableState<Boolean>
+    isSelectedState: MutableState<Boolean>,
+    onSignOut: () -> Unit
 ) {
-    val vModel: AuthViewModel = viewModel()
-
     Surface(
         tonalElevation = if (isSelectedState.value) 3.dp else 0.dp,
         shadowElevation = if (isSelectedState.value) 3.dp else 0.dp,
@@ -85,7 +80,7 @@ fun SettingSubItem(
             .clickable {
                 when (subOptions?.get(0)?.title) {
                     "Sign out" -> {
-                        vModel.signOut()
+                        onSignOut()
                     }
                 }
             }
@@ -105,7 +100,7 @@ fun SettingSubItem(
                 ) {
                     Text(
                         text = subOption.title,
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
                         text = subOption.subtitle ?: "",
@@ -123,10 +118,10 @@ fun SettingSubItem(
 @Composable
 fun SettingItem(
     setting: SettingOption,
+    onSignOut: () -> Unit
 ) {
     val isSelectedState = remember { mutableStateOf(setting.isSelected) }
     Surface(
-        tonalElevation = if (isSelectedState.value) 6.dp else 0.dp,
         shadowElevation = if (isSelectedState.value) 6.dp else 0.dp,
         modifier = Modifier
             .clickable {
@@ -163,7 +158,7 @@ fun SettingItem(
         }
     }
     if (isSelectedState.value) {
-        SettingSubItem(setting.subOptions, isSelectedState)
+        SettingSubItem(setting.subOptions, isSelectedState, onSignOut)
     }
 }
 
@@ -171,6 +166,7 @@ fun SettingItem(
 @Composable
 fun SettingsScreen(
     onNavigateBack: () -> Unit,
+    onSignOut: () -> Unit,
     settingsOptions: List<SettingOption>? = settingsList
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
@@ -203,8 +199,8 @@ fun SettingsScreen(
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
         ) {
-            settingsList.forEach { option ->
-                SettingItem(setting = option)
+            settingsOptions?.forEach { option ->
+                SettingItem(setting = option, onSignOut = onSignOut)
             }
         }
     }
