@@ -22,7 +22,7 @@ import java.util.*
 @Composable
 fun AddHealthRecord() {
     val context = LocalContext.current
-    var type by remember { mutableStateOf(HealthRecordType.OPERATION) }
+    val type by remember { mutableStateOf(HealthRecordType.OPERATION) }
     var date by remember { mutableStateOf(Date()) }
     var details by remember { mutableStateOf("") }
 
@@ -33,12 +33,7 @@ fun AddHealthRecord() {
     ) {
         // Type selection
         HealthRecordType.entries.forEach { recordType ->
-            Button(
-                onClick = { type = recordType },
-                modifier = Modifier.padding(8.dp)
-            ) {
-                Text(text = recordType.name)
-            }
+            Text(text = "Text")
         }
 
         // Date selection
@@ -66,40 +61,97 @@ fun AddHealthRecord() {
             onValueChange = { details = it },
             label = { Text("Details") },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth().padding(8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
         )
 
         // Additional fields based on record type
-        when (type) {
-            HealthRecordType.OPERATION -> {
-                // Additional fields for operation record
-                OutlinedTextField(
-                    value = "", // Initialize with empty string
-                    onValueChange = { /* Update operation field value */ },
-                    label = { Text("Operation Field") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth().padding(8.dp)
-                )
-            }
-            HealthRecordType.VETERINARIAN_VISIT -> {
-                // Additional fields for veterinarian visit record
-                OutlinedTextField(
-                    value = "", // Initialize with empty string
-                    onValueChange = { /* Update veterinarian visit field value */ },
-                    label = { Text("Veterinarian Visit Field") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth().padding(8.dp)
-                )
-            }
-            // Add cases for other record types similarly
-            // Example:
-            // HealthRecordType.MEDICATION -> { /* Add medication fields */ }
-            HealthRecordType.MEDICATION -> TODO()
-            HealthRecordType.SYMPTOM -> TODO()
-            HealthRecordType.ALLERGY -> TODO()
-            HealthRecordType.EXERCISE -> TODO()
-            HealthRecordType.WEIGHT_MEASUREMENT -> TODO()
-        }
+        // when (type) {
+        //    HealthRecordType.OPERATION -> {
+        // Additional fields for operation record
+        OutlinedTextField(
+            value = "", // Initialize with empty string
+            onValueChange = { /* Update operation field value */ },
+            label = { Text("Operation Field") },
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        )
+
+        // HealthRecordType.VETERINARIAN_VISIT -> {
+        // Additional fields for veterinarian visit record
+        OutlinedTextField(
+            value = "", // Initialize with empty string
+            onValueChange = { /* Update veterinarian visit field value */ },
+            label = { Text("Veterinarian Visit Field") },
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        )
+
+        //HealthRecordType.MEDICATION -> {
+        // Additional fields for medication record
+        OutlinedTextField(
+            value = "", // Initialize with empty string
+            onValueChange = { /* Update medication field value */ },
+            label = { Text("Medication Field") },
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        )
+
+        //HealthRecordType.SYMPTOM -> {
+        // Additional fields for symptom record
+        OutlinedTextField(
+            value = "", // Initialize with empty string
+            onValueChange = { /* Update symptom field value */ },
+            label = { Text("Symptom Field") },
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        )
+
+        //HealthRecordType.ALLERGY -> {
+        // Additional fields for allergy record
+        OutlinedTextField(
+            value = "", // Initialize with empty string
+            onValueChange = { /* Update allergy field value */ },
+            label = { Text("Allergy Field") },
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        )
+
+        // HealthRecordType.EXERCISE -> {
+        // Additional fields for exercise record
+        OutlinedTextField(
+            value = "", // Initialize with empty string
+            onValueChange = { /* Update exercise field value */ },
+            label = { Text("Exercise Field") },
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        )
+
+        // HealthRecordType.WEIGHT_MEASUREMENT -> {
+        // Additional fields for weight measurement record
+        OutlinedTextField(
+            value = "", // Initialize with empty string
+            onValueChange = { /* Update weight measurement field value */ },
+            label = { Text("Weight Measurement Field") },
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        )
+    }
 
         // Save button
         Button(
@@ -113,12 +165,11 @@ fun AddHealthRecord() {
             Text("Save")
         }
     }
-}
+
 
 @Preview
 @Composable
 fun PreviewAddHealthRecord() {
     AddHealthRecord()
 }
-
 
