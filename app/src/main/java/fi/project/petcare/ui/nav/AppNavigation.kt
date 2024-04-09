@@ -1,5 +1,6 @@
 package fi.project.petcare.ui.nav
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -20,7 +21,6 @@ fun NavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
         startDestination = Screen.Welcome.route
-        //modifier = Modifier.padding(innerPadding)
     ) {
         composable(Screen.Welcome.route) {
             WelcomeScreen(
@@ -58,6 +58,16 @@ fun NavGraph(navController: NavHostController) {
                     navController = navController
                 ) {
                     ProfileScreen(petName = "Fluffy", navController = navController)
+                }
+            }
+            composable(Screen.Dashboard.Community.route) {
+                Dashboard(
+                    onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
+                    navController = navController
+                ) {
+                    Text(
+                        text = "Community content"
+                    )
                 }
             }
             composable(Screen.Settings.route) {
