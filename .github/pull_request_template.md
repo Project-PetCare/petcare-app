@@ -1,19 +1,22 @@
 ## Description
-This pull request addresses issue #...
+<!--- Describe your changes in detail, if necessary -->
+
+## Related Issue
+<!--- Please link to the issue here. Example: -->
+This pull request closes issue #...
 
 ## Changes
-- Added a new feature to improve user experience.
-- Fixed a bug related to data validation.
-- ...
+<!--- Check all applicable changes here and remove the ones that are not applicable -->
+- [ ] New Feature
+- [ ] Bug Fix
+- [ ] Refactor
+- [ ] Optimization
+- [ ] Documentation
+- [ ] Testing
+- [ ] Build
 
-## Screenshots (if applicable)
-[Attach screenshots here]
+## Screenshots (Optional)
+<!--- Attach screenshots here -->
 
-## Checklist
-- [ ] Tested locally
-- [ ] Code follows project conventions
-- [ ] Documentation updated
-- [ ] Ready for review
-
-## Additional Notes
-[Add any additional notes here]
+## Additional Notes (Optional)
+<!--- Add any additional notes here -->

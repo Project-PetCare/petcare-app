@@ -2,7 +2,6 @@ package fi.project.petcare.ui.nav
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,15 +15,17 @@ import fi.project.petcare.ui.screens.WelcomeScreen
 import fi.project.petcare.viewmodel.AuthViewModel
 
 @Composable
-fun NavGraph(navController: NavHostController) {
-    val authViewModel: AuthViewModel = viewModel()
+fun NavGraph(
+    navController: NavHostController,
+    userViewModel: AuthViewModel
+) {
     NavHost(
         navController = navController,
         startDestination = Screen.Welcome.route
     ) {
         composable(Screen.Welcome.route) {
             WelcomeScreen(
-                vModel = authViewModel,
+                vModel = userViewModel,
                 onUserAuthenticated = { navController.navigate(Screen.Dashboard.Home.route) }
             )
         }
@@ -71,7 +72,15 @@ fun NavGraph(navController: NavHostController) {
                 }
             }
             composable(Screen.Settings.route) {
-                SettingsScreen(onNavigateToHome = { navController.navigate(Screen.Dashboard.Home.route) })
+                SettingsScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onSignOut = {
+                        userViewModel.signOut()
+                        navController.navigate(Screen.Welcome.route) {
+                            popUpTo(Screen.Welcome.route) { inclusive = true }
+                        }
+                    }
+                )
             }
         }
     }
