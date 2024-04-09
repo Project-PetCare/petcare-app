@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import fi.project.petcare.ui.composables.Dashboard
 import fi.project.petcare.ui.screens.HomeScreen
+import fi.project.petcare.ui.screens.PetListScreen
 import fi.project.petcare.ui.screens.ProfileScreen
 import fi.project.petcare.ui.screens.SettingsScreen
 import fi.project.petcare.ui.screens.WelcomeScreen
@@ -37,11 +38,21 @@ fun NavGraph(navController: NavHostController) {
                     navController = navController
                 ) {
                     HomeScreen(
-                        onNavigateToProfile = { navController.navigate(Screen.Dashboard.PetProfile.route) }
+                        onNavigateToProfile = { navController.navigate(Screen.Dashboard.Pets.route) }
                     )
                 }
             }
-            composable(Screen.Dashboard.PetProfile.route) {
+            composable(Screen.Dashboard.Pets.route) {
+                Dashboard(
+                    onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
+                    navController = navController
+                ) {
+                    PetListScreen(
+                        onNavigateToProfile = { navController.navigate(Screen.PetProfile.route) }
+                    )
+                }
+            }
+            composable(Screen.PetProfile.route) {
                 Dashboard(
                     onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
                     navController = navController
