@@ -32,7 +32,6 @@ import kotlinx.coroutines.launch
 sealed class AuthUiState {
     object Unauthenticated : AuthUiState()
     object Authenticated : AuthUiState()
-    object Verifying : AuthUiState()
     object Loading : AuthUiState()
     data class Error(val messageId: Int?, val message: String) : AuthUiState()
 }
@@ -48,7 +47,6 @@ class AuthViewModel: ViewModel() {
                 _authUiState.value = AuthUiState.Unauthenticated
             }
         }
-
     }
 
     private val apiUrl = BuildConfig.SUPABASE_URL
@@ -72,9 +70,7 @@ class AuthViewModel: ViewModel() {
                     password = userPassword
                 }
                 Log.i("User registered returns: ", user.toString())
-//                _authUiState.value = AuthUiState.Verifying
                 _authUiState.value = AuthUiState.Authenticated
-
             } catch (e: Exception) {
                 Log.e("User registration failed: ", e.toString())
                 _authUiState.value = AuthUiState.Error(
@@ -105,17 +101,17 @@ class AuthViewModel: ViewModel() {
                         message = "Please verify your email address."
                     )
                     clearErrorStateWithDelay()
-
                 } else if (e.message?.contains("Invalid login credentials") == true) {
                     _authUiState.value = AuthUiState.Error(
                         messageId = 2,
                         message = "Email or password is incorrect."
                     )
                     clearErrorStateWithDelay()
-
                 }
-                Log.e("Exception: ", e.toString())
-
+                _authUiState.value = AuthUiState.Error(
+                    messageId = 2,
+                    message = "Something went wrong. Please try again later."
+                )
                 /* TODO: Implement login attempts
                 attempts--
                 if (attempts == 0) {
@@ -127,7 +123,7 @@ class AuthViewModel: ViewModel() {
                 Log.e("User sign in failed: ", e.toString())
                 _authUiState.value = AuthUiState.Error(
                     messageId = 2,
-                    message = e.message.toString()
+                    message = "Something went wrong. Please try again later."
                 )
                 clearErrorStateWithDelay()
             }
