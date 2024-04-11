@@ -21,7 +21,10 @@ jobs:
         cache: gradle
 
     - name: Generate required local.propeties file for CI
-      run: touch local.properties
+      run: |
+        echo "server.client.id=\"your_server_client_id\"" > local.properties
+        echo "api.url=\"your_api_url\"" >> local.properties
+        echo "api.key=\"your_api_key\"" >> local.properties
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
