@@ -1,6 +1,5 @@
 package fi.project.petcare.ui.composables
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,12 +10,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Handshake
 import androidx.compose.material.icons.filled.Password
+import androidx.compose.material.icons.outlined.AccountBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -45,7 +46,8 @@ import io.github.jan.supabase.compose.auth.ui.password.rememberPasswordRuleList
 
 @OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class)
 @Composable
-fun Register(authState: AuthUiState, onRegister: (email: String, password: String) -> Unit) {
+fun Register(authState: AuthUiState, onRegister: (username: String?, email: String, password: String) -> Unit) {
+    var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     val state = LocalAuthState.current
@@ -97,6 +99,20 @@ fun Register(authState: AuthUiState, onRegister: (email: String, password: Strin
                 )
             }
         }
+        OutlinedTextField(
+            value = username,
+            onValueChange = { username = it },
+            label = { Text("Username (optional)") },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next,
+            ),
+            shape = MaterialTheme.shapes.large,
+            leadingIcon = {
+                Icon(Icons.Outlined.AccountBox, contentDescription = "Account user name")
+            },
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
         OutlinedEmailField(
             value = email,
             onValueChange = { email = it },
@@ -120,7 +136,6 @@ fun Register(authState: AuthUiState, onRegister: (email: String, password: Strin
                 PasswordRule.containsUppercase()
             ),
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
                 autoCorrect = false,
                 imeAction = ImeAction.Done
             ),
@@ -144,7 +159,7 @@ fun Register(authState: AuthUiState, onRegister: (email: String, password: Strin
         }
         Button(
             onClick = {
-                onRegister(email, password)
+                onRegister(username, email, password)
             },
             enabled = state.validForm,
             modifier = Modifier
@@ -239,7 +254,6 @@ fun Login(
             label = { Text("Password") },
             rules = rememberPasswordRuleList(PasswordRule.minLength(6)),
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
                 autoCorrect = false,
                 imeAction = ImeAction.Done
             ),
