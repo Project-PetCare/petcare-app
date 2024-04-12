@@ -1,19 +1,12 @@
 package fi.project.petcare.viewmodel
 
-import android.content.Context
-import androidx.credentials.CredentialManager
-import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import android.util.Log
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.NoCredentialException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fi.project.petcare.BuildConfig
-import fi.project.petcare.utils.buildGoogleSignInRequest
-import fi.project.petcare.utils.generateHashedNonce
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.exceptions.BadRequestRestException
 import io.github.jan.supabase.gotrue.Auth
@@ -155,70 +148,51 @@ class AuthViewModel: ViewModel() {
             } catch (e: Exception) {
                 Log.e("User sign out failed: ", e.toString())
                 _authUiState.value = AuthUiState.Error(
-                    messageId = 4,
+                    messageId = 3,
                     message = "Something went wrong. Please try again later."
                 )
             }
         }
     }
 
-    // Is Context really needed here?
-    fun googleSignIn(activityContext: Context) {
-        val credentialManager = CredentialManager.create(activityContext)
-        val (rawNonce, hashedNonce) = generateHashedNonce()
-        val setServerClientId = BuildConfig.SERVER_CLIENT_ID
-        val request: GetCredentialRequest = buildGoogleSignInRequest(
-            alreadyUser = false,
-            autoSelectAccount = true,
-            serverClientId = setServerClientId,
-            hashedNonce = hashedNonce
-        )
-
+    // See https://developer.android.com/training/sign-in/passkeys#add-support-dal
+    fun googleSignIn(rawNonce: String, googleIdToken: String) {
         viewModelScope.launch {
             try {
-                // Only this result should be used in the view model
-                // Since it needs the context. See https://developer.android.com/training/sign-in/passkeys#add-support-dal
-                val result = credentialManager.getCredential(
-                    request = request,
-                    context = activityContext,
-                )
-                val googleIdTokenCredential = GoogleIdTokenCredential
-                    .createFrom(result.credential.data)
-                val googleIdToken = googleIdTokenCredential.idToken
-
-                // Handle sign-in with Google
                 supabase.auth.signInWith(IDToken) {
                     idToken = googleIdToken
                     provider = Google
                     nonce = rawNonce
                 }
                 _authUiState.value = AuthUiState.Authenticated
-
-                // Handle successful sign-in
             } catch (e: GetCredentialCancellationException) {
                 // Do nothing. User chose to cancel sign-in with Google
                 return@launch
             } catch (e: NoCredentialException) {
+                Log.e("RestException", e.toString())
                 _authUiState.value = AuthUiState.Error(
-                    messageId = 5,
+                    messageId = 3,
                     message = "No Google account found."
                 )
             } catch (e: GetCredentialException) {
                 // Handle GetCredentialException thrown by `credentialManager.getCredential()`
                 Log.e("GetCredentialException", e.toString())
-//
-//            } catch (e: IllegalArgumentException) {
-//                // Handle IllegalArgumentException thrown by `GoogleIdTokenCredential.createFrom()`
-//                Log.e("GoogleIdTokenCredential", e.toString())
-//            } catch (e: GoogleIdTokenParsingException) {
-//                // Handle GoogleIdTokenParsingException thrown by `GoogleIdTokenCredential.createFrom()`
-//                Log.e("GoogleIdTokenParsingException", e.toString())
+                _authUiState.value = AuthUiState.Error(
+                    messageId = 3,
+                    message = "No credentials were found."
+                )
             } catch (e: RestException) {
-                // Handle RestException thrown by Supabase
+                _authUiState.value = AuthUiState.Error(
+                    messageId = 3,
+                    message = "We are fixing some issues. Please try again later."
+                )
                 Log.e("RestException", e.toString())
             } catch (e: Exception) {
-                // Handle unknown exceptions
                 Log.e("Exception", e.toString())
+                _authUiState.value = AuthUiState.Error(
+                    messageId = 3,
+                    message = "Something went wrong. Please try again later."
+                )
             }
         }
     }

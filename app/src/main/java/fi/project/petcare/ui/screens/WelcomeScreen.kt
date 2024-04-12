@@ -114,6 +114,7 @@ fun WelcomeScreen(vModel: AuthViewModel, onUserAuthenticated: () -> Unit) {
                             .fillMaxWidth()
                     ) {
                         GoogleSignInButton(
+                            coroutineScope = scope,
                             onClick = vModel::googleSignIn,
                             modifier = Modifier
                                 .weight(1f)
