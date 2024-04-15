@@ -1,20 +1,9 @@
 package fi.project.petcare.viewmodel
 
-import android.content.Context
-import androidx.credentials.CredentialManager
-import androidx.credentials.GetCredentialRequest
-import androidx.credentials.exceptions.GetCredentialException
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import android.util.Log
-import androidx.credentials.CreatePasswordRequest
-import androidx.credentials.exceptions.GetCredentialCancellationException
-import androidx.credentials.exceptions.NoCredentialException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fi.project.petcare.BuildConfig
-import fi.project.petcare.utils.buildGoogleSignInRequest
-import fi.project.petcare.utils.generateHashedNonce
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.exceptions.BadRequestRestException
 import io.github.jan.supabase.gotrue.Auth
@@ -28,11 +17,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 sealed class AuthUiState {
     object Unauthenticated : AuthUiState()
     object Authenticated : AuthUiState()
-    object Verifying : AuthUiState()
     object Loading : AuthUiState()
     data class Error(val messageId: Int?, val message: String) : AuthUiState()
 }
@@ -48,7 +38,6 @@ class AuthViewModel: ViewModel() {
                 _authUiState.value = AuthUiState.Unauthenticated
             }
         }
-
     }
 
     private val apiUrl = BuildConfig.SUPABASE_URL
@@ -62,19 +51,19 @@ class AuthViewModel: ViewModel() {
         }
     }
 
-    fun signUp(userEmail: String, userPassword: String) {
+    fun signUp(userName: String?, userEmail: String, userPassword: String) {
         _authUiState.value = AuthUiState.Loading
-        val createPasswordRequest = CreatePasswordRequest(id = userEmail, password = userPassword)
         viewModelScope.launch {
             try {
                 val user = supabase.auth.signUpWith(Email) {
                     email = userEmail
                     password = userPassword
+                    data = buildJsonObject {
+                        put("full_name", userName ?: userEmail)
+                    }
                 }
                 Log.i("User registered returns: ", user.toString())
-//                _authUiState.value = AuthUiState.Verifying
                 _authUiState.value = AuthUiState.Authenticated
-
             } catch (e: Exception) {
                 Log.e("User registration failed: ", e.toString())
                 _authUiState.value = AuthUiState.Error(
@@ -85,8 +74,6 @@ class AuthViewModel: ViewModel() {
             }
         }
     }
-
-//    private var attempts = 3 // Maximum number of failed attempts. May be changed in the future
 
     fun signIn(userEmail: String, userPassword: String) {
         _authUiState.value = AuthUiState.Loading
@@ -105,29 +92,22 @@ class AuthViewModel: ViewModel() {
                         message = "Please verify your email address."
                     )
                     clearErrorStateWithDelay()
-
                 } else if (e.message?.contains("Invalid login credentials") == true) {
                     _authUiState.value = AuthUiState.Error(
                         messageId = 2,
                         message = "Email or password is incorrect."
                     )
                     clearErrorStateWithDelay()
-
                 }
-                Log.e("Exception: ", e.toString())
-
-                /* TODO: Implement login attempts
-                attempts--
-                if (attempts == 0) {
-                    _authUiState.value = AuthUiState.Error("Please try again later.")
-                    return@launch
-                }
-                 */
+                _authUiState.value = AuthUiState.Error(
+                    messageId = 2,
+                    message = "Something went wrong. Please try again later."
+                )
             } catch (e: Exception) {
                 Log.e("User sign in failed: ", e.toString())
                 _authUiState.value = AuthUiState.Error(
                     messageId = 2,
-                    message = e.message.toString()
+                    message = "Something went wrong. Please try again later."
                 )
                 clearErrorStateWithDelay()
             }
@@ -165,76 +145,36 @@ class AuthViewModel: ViewModel() {
             } catch (e: Exception) {
                 Log.e("User sign out failed: ", e.toString())
                 _authUiState.value = AuthUiState.Error(
-                    messageId = 4,
+                    messageId = 3,
                     message = "Something went wrong. Please try again later."
                 )
             }
         }
     }
 
-    // Is Context really needed here?
-    fun googleSignIn(activityContext: Context) {
-        val credentialManager = CredentialManager.create(activityContext)
-        val (rawNonce, hashedNonce) = generateHashedNonce()
-        val setServerClientId = BuildConfig.SERVER_CLIENT_ID
-        val request: GetCredentialRequest = buildGoogleSignInRequest(
-            alreadyUser = false,
-            autoSelectAccount = true,
-            serverClientId = setServerClientId,
-            hashedNonce = hashedNonce
-        )
-
+    // See https://developer.android.com/training/sign-in/passkeys#add-support-dal
+    fun googleSignIn(rawNonce: String, googleIdToken: String) {
         viewModelScope.launch {
             try {
-                // Only this result should be used in the view model
-                // Since it needs the context. See https://developer.android.com/training/sign-in/passkeys#add-support-dal
-                val result = credentialManager.getCredential(
-                    request = request,
-                    context = activityContext,
-                )
-                val googleIdTokenCredential = GoogleIdTokenCredential
-                    .createFrom(result.credential.data)
-                val googleIdToken = googleIdTokenCredential.idToken
-
-                // Handle sign-in with Google
                 supabase.auth.signInWith(IDToken) {
                     idToken = googleIdToken
                     provider = Google
                     nonce = rawNonce
                 }
                 _authUiState.value = AuthUiState.Authenticated
-
-                // Handle successful sign-in
-            } catch (e: GetCredentialCancellationException) {
-                // Do nothing. User chose to cancel sign-in with Google
-                return@launch
-            } catch (e: NoCredentialException) {
-                _authUiState.value = AuthUiState.Error(
-                    messageId = 5,
-                    message = "No Google account found."
-                )
-            } catch (e: GetCredentialException) {
-                // Handle GetCredentialException thrown by `credentialManager.getCredential()`
-                Log.e("GetCredentialException", e.toString())
-//
-//            } catch (e: IllegalArgumentException) {
-//                // Handle IllegalArgumentException thrown by `GoogleIdTokenCredential.createFrom()`
-//                Log.e("GoogleIdTokenCredential", e.toString())
-//            } catch (e: GoogleIdTokenParsingException) {
-//                // Handle GoogleIdTokenParsingException thrown by `GoogleIdTokenCredential.createFrom()`
-//                Log.e("GoogleIdTokenParsingException", e.toString())
             } catch (e: RestException) {
-                // Handle RestException thrown by Supabase
+                _authUiState.value = AuthUiState.Error(
+                    messageId = 3,
+                    message = "We are fixing some issues. Please try again later."
+                )
                 Log.e("RestException", e.toString())
             } catch (e: Exception) {
-                // Handle unknown exceptions
                 Log.e("Exception", e.toString())
+                _authUiState.value = AuthUiState.Error(
+                    messageId = 3,
+                    message = "Something went wrong. Please try again later."
+                )
             }
         }
     }
-
-    fun passkeySignIn() {
-        // TODO
-    }
-
 }

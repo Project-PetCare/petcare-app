@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
@@ -29,11 +28,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import fi.project.petcare.R
 import fi.project.petcare.ui.composables.GoogleSignInButton
 import fi.project.petcare.ui.composables.Login
 import fi.project.petcare.ui.composables.Register
@@ -117,6 +114,7 @@ fun WelcomeScreen(vModel: AuthViewModel, onUserAuthenticated: () -> Unit) {
                             .fillMaxWidth()
                     ) {
                         GoogleSignInButton(
+                            coroutineScope = scope,
                             onClick = vModel::googleSignIn,
                             modifier = Modifier
                                 .weight(1f)
@@ -129,17 +127,16 @@ fun WelcomeScreen(vModel: AuthViewModel, onUserAuthenticated: () -> Unit) {
                                 .weight(1f)
                                 .height(58.dp)
                         ) {
-                            Text(text = "Passkey ")
-                            Icon( painterResource(id = R.drawable.ic_passkey), contentDescription = "Passkey")
+                            Text(text = "Demo Mode")
                         }
                     }
                     Column (
-                        modifier = Modifier.padding(start = 24.dp, top = 24.dp, end = 24.dp),
+                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
                     ) {
                         Text(
-                            text = "This footer may not be necessary here.",
+                            text = "PetCare is here to help you keep track of pets' health and activities. Join us now to get started!",
                             maxLines = 2,
                             softWrap = true,
                             overflow = TextOverflow.Ellipsis,
