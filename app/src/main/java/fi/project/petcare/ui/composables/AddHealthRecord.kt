@@ -1,6 +1,5 @@
 package fi.project.petcare.ui.composables
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
@@ -29,17 +27,12 @@ import fi.project.petcare.model.data.HealthRecordType
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import com.supabase.android.SupabaseClient
 import fi.project.petcare.model.data.HealthRecordState
 
-// Initialize Supabase client
-const val supabaseUrl = "YOUR_SUPABASE_URL"
-const val supabaseKey = "YOUR_SUPABASE_API_KEY"
-val supabaseClient = SupabaseClient(supabaseUrl, supabaseKey)
 
 @Composable
 fun AddHealthRecord() {
-    var healthRecordState by remember { mutableStateOf(HealthRecordState()) }
+    val healthRecordState by remember { mutableStateOf(HealthRecordState()) }
 
 
     Column(
@@ -55,9 +48,10 @@ fun AddHealthRecord() {
         ) {
             // DropdownMenuItem should be placed here, inside the DropdownMenu's child lambda
             HealthRecordType.entries.forEach { recordType ->
-                DropdownMenuItem(onClick = { healthRecordState.type = recordType }) {
-                    Text(recordType.name)
-                }
+                DropdownMenuItem(
+                    text= {Text(recordType.name)},
+                    onClick = { healthRecordState.type = recordType }
+                )
             }
         }
 
@@ -194,7 +188,7 @@ fun AddHealthRecord() {
                     healthRecordState.date,
                     healthRecordState.details
                 )
-                saveHealthRecord(healthRecord)
+                // Save it on the database here
             },
             modifier = Modifier.padding(8.dp)
         ) {
@@ -203,19 +197,6 @@ fun AddHealthRecord() {
     }
 }
 
-// Function to save health record to Supabase database
-private fun saveHealthRecord(healthRecord: HealthRecord) {
-    val tableName = "health_records" // Name of the table in your Supabase database
-    supabaseClient.table(tableName)
-        .insert(healthRecord.toMap())
-        .enqueue { result ->
-            if (result.isSuccess) {
-                Log.d("AddHealthRecord", "Health record saved successfully")
-            } else {
-                Log.e("AddHealthRecord", "Error saving health record: ${result.error}")
-            }
-        }
-}
 
 
     @Preview
