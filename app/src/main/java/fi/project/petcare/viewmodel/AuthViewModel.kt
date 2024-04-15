@@ -1,9 +1,6 @@
 package fi.project.petcare.viewmodel
 
-import androidx.credentials.exceptions.GetCredentialException
 import android.util.Log
-import androidx.credentials.exceptions.GetCredentialCancellationException
-import androidx.credentials.exceptions.NoCredentialException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fi.project.petcare.BuildConfig
@@ -165,22 +162,6 @@ class AuthViewModel: ViewModel() {
                     nonce = rawNonce
                 }
                 _authUiState.value = AuthUiState.Authenticated
-            } catch (e: GetCredentialCancellationException) {
-                // Do nothing. User chose to cancel sign-in with Google
-                return@launch
-            } catch (e: NoCredentialException) {
-                Log.e("RestException", e.toString())
-                _authUiState.value = AuthUiState.Error(
-                    messageId = 3,
-                    message = "No Google account found."
-                )
-            } catch (e: GetCredentialException) {
-                // Handle GetCredentialException thrown by `credentialManager.getCredential()`
-                Log.e("GetCredentialException", e.toString())
-                _authUiState.value = AuthUiState.Error(
-                    messageId = 3,
-                    message = "No credentials were found."
-                )
             } catch (e: RestException) {
                 _authUiState.value = AuthUiState.Error(
                     messageId = 3,
