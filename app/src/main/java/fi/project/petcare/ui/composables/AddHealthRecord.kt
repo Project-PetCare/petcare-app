@@ -32,7 +32,7 @@ fun AddHealthRecord() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Type selection
-        HealthRecordType.entries.forEach { recordType ->
+        repeat(HealthRecordType.entries.size) {
             Text(text = "Text")
         }
 
