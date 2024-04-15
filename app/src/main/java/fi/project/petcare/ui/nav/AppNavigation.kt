@@ -11,6 +11,7 @@ import fi.project.petcare.ui.screens.HomeScreen
 import fi.project.petcare.ui.screens.PetListScreen
 import fi.project.petcare.ui.screens.ProfileScreen
 import fi.project.petcare.ui.screens.SettingsScreen
+import fi.project.petcare.ui.screens.User
 import fi.project.petcare.ui.screens.WelcomeScreen
 import fi.project.petcare.viewmodel.AuthViewModel
 
@@ -39,7 +40,7 @@ fun NavGraph(
                     navController = navController
                 ) {
                     HomeScreen(
-                        onNavigateToProfile = { navController.navigate(Screen.Dashboard.Pets.route) }
+                        user = User(name = "John Doe", email = "johndoe@email.com")
                     )
                 }
             }
