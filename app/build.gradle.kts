@@ -80,6 +80,13 @@ dependencies {
     //implementation(libs.androidx.appcompat)
     //implementation(libs.material)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.skiko.android)
+    // Lets-Plot Kotlin API
+    implementation(libs.lets.plot.kotlin.kernel)
+    // Lets-Plot Multiplatform
+    implementation(libs.lets.plot.common)
+    // Lets-Plot Skia Frontend
+    implementation(libs.lets.plot.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
