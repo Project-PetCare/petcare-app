@@ -79,8 +79,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     //implementation(libs.androidx.appcompat)
     //implementation(libs.material)
+    //implementation(libs.skiko.android)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.skiko.android)
     // Lets-Plot Kotlin API
     implementation(libs.lets.plot.kotlin.kernel)
     // Lets-Plot Multiplatform
