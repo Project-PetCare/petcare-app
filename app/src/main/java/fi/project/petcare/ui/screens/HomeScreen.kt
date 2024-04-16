@@ -1,13 +1,19 @@
 package fi.project.petcare.ui.screens
 
-import fi.project.petcare.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
@@ -26,13 +32,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
+import fi.project.petcare.R
 
 @Composable
 fun HomeScreen(onNavigateToProfile: () -> Unit) {
@@ -41,14 +48,35 @@ fun HomeScreen(onNavigateToProfile: () -> Unit) {
             .fillMaxSize()
             .padding(horizontal = 25.dp, vertical = 16.dp)
     )
-    {
+
+     {
+         Spacer(modifier = Modifier.height(16.dp))
+        // Top bar with text "Pets" and setting icon
+        Row(
+
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "Pets",
+                style = TextStyle(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 24.sp
+                ),
+                modifier = Modifier.weight(1f)
+            )
+            // Setting icon
+        }
+
+
+
         // Pet Icons
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
             PetIcon(imageRes = R.drawable.pet_icon_1, text = "Your Text")
-            PetIcon(imageRes = R.drawable.pet_icon_2, text = "Another Text")
+            PetIcon(imageRes = R.drawable.pet_icon_1, text = "Another Text")
             PetIcon(imageRes = R.drawable.pet_icon_5, text = "More Text")
         }
         // Pet Profile with cover photo
@@ -62,7 +90,7 @@ fun HomeScreen(onNavigateToProfile: () -> Unit) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(300.dp)
+                    .height(320.dp)
             ) {
                 // Cover photo
                 Image(
@@ -139,12 +167,7 @@ fun HomeScreen(onNavigateToProfile: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(16.dp)
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.medical_record_icon1),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(32.dp) // Adjust the size of the image
-                )
+
                 Spacer(modifier = Modifier.width(12.dp))
                 // We may use TextButton instead of ClickableText here. You can try it.
                 ClickableText(
@@ -164,12 +187,7 @@ fun HomeScreen(onNavigateToProfile: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(16.dp)
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.medical_record_icon2),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(32.dp) // Adjust the size of the image
-                )
+
                 Spacer(modifier = Modifier.width(12.dp))
 //                ClickableText(
 //                    text = AnnotatedString("Prescription"),
@@ -198,12 +216,7 @@ fun HomeScreen(onNavigateToProfile: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(16.dp)
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.labtest),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(32.dp) // Adjust the size of the image
-                )
+
                 Spacer(modifier = Modifier.width(12.dp))
                 ClickableText(
                     text = AnnotatedString("Lab Results"),
@@ -296,3 +309,4 @@ fun ClickableRow(
         content()
     }
 }
+
