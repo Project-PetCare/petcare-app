@@ -15,7 +15,7 @@ android {
         minSdk = 33
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.1.0"
 
         val keystoreFile = project.rootProject.file("local.properties")
         val properties = Properties()
@@ -89,6 +89,7 @@ dependencies {
 
     // Credentials manager and sign in with google
     implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
     // Supabase libraries
     implementation(platform(libs.bom))

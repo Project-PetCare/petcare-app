@@ -1,30 +1,26 @@
 package fi.project.petcare.ui.screens
 
-import android.util.Log
 import fi.project.petcare.R
-
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Box
-
-
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowRight
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,23 +30,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.material3.Typography
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
-import androidx.navigation.NavController
-
-
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(onNavigateToProfile: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 25.dp, vertical = 16.dp)
-
-
     )
+
      {
          Spacer(modifier = Modifier.height(16.dp))
         // Top bar with text "Pets" and setting icon
@@ -68,14 +59,9 @@ fun HomeScreen(navController: NavController) {
                 modifier = Modifier.weight(1f)
             )
             // Setting icon
-            Image(
-                painter = painterResource(id = R.drawable.setting_icon),
-                contentDescription = "Setting icon",
-                modifier = Modifier
-                    .size(32.dp)
-                    .padding(start = 8.dp, end = 8.dp)
-            )
         }
+
+
 
         // Pet Icons
         Row(
@@ -83,7 +69,7 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth()
         ) {
             PetIcon(imageRes = R.drawable.pet_icon_1, text = "Your Text")
-            PetIcon(imageRes = R.drawable.pet_icon_2, text = "Another Text")
+            PetIcon(imageRes = R.drawable.pet_icon_1, text = "Another Text")
             PetIcon(imageRes = R.drawable.pet_icon_5, text = "More Text")
         }
         // Pet Profile with cover photo
@@ -94,7 +80,6 @@ fun HomeScreen(navController: NavController) {
             ),
             shape = RoundedCornerShape(16.dp)
         ) {
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -110,40 +95,23 @@ fun HomeScreen(navController: NavController) {
                         .padding(bottom = 20.dp),
                     contentScale = ContentScale.Crop
                 )
-
-//pet profile details
+                // Pet profile details
                 Column(
                     modifier = Modifier
                         .padding(16.dp)
                         .align(Alignment.BottomStart)
                 ) {
 
-                    ClickableRow(
-                        {
-                            try {
-                                navController.navigate("profile")
-                            } catch (e: Exception) {
-                                // Handle navigation error
-                            }
-                        }
-                    ) {
+                    ClickableRow( { onNavigateToProfile() } ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
                                 text = "Fluffy",
-                                style = TextStyle(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 20.sp,
-                                    color = Color.Black
-                                ),
+                                style = MaterialTheme.typography.bodyMedium,
                                 modifier = Modifier.weight(1f)
                             )
-                            Icon(
-                                painter = painterResource(id = R.drawable.arrow_icon),
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp) // Adjust the size of the arrow icon
-                            )
+                            Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowRight, contentDescription = null)
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
@@ -157,18 +125,10 @@ fun HomeScreen(navController: NavController) {
                         ) {
                             Text(
                                 text = "Type: Dog",
-                                style = TextStyle(
-                                    fontSize = 16.sp,
-                                    color = Color.Black
-                                )
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = "Gender: Male",
-                                style = TextStyle(
-                                    fontSize = 16.sp,
-                                    color = Color.Black
-                                )
                             )
                         }
                         Column(
@@ -178,18 +138,10 @@ fun HomeScreen(navController: NavController) {
                         ) {
                             Text(
                                 text = "Age: 3 years",
-                                style = TextStyle(
-                                    fontSize = 16.sp,
-                                    color = Color.Black
-                                )
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = "Weight: 25kg",
-                                style = TextStyle(
-                                    fontSize = 16.sp,
-                                    color = Color.Black
-                                )
                             )
                         }
                     }
@@ -202,122 +154,90 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            ),
-            shape = RoundedCornerShape(16.dp)
+            )
         ) {
-            Column(
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(16.dp)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+
+                Spacer(modifier = Modifier.width(12.dp))
+                // We may use TextButton instead of ClickableText here. You can try it.
+                ClickableText(
+                    text = AnnotatedString("Medical Records"),
+                    onClick = {
+                        /* Navigate to new page */
+                    },
+                    modifier = Modifier.weight(1f),
+                )
+                Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowRight, contentDescription = null)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Prescription
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(16.dp)
+            ) {
+
+                Spacer(modifier = Modifier.width(12.dp))
+//                ClickableText(
+//                    text = AnnotatedString("Prescription"),
+//                    onClick = { /* Navigate to new page */ },
+//                    modifier = Modifier.weight(1f),
+//                    style = TextStyle(
+//                        fontWeight = FontWeight.SemiBold,
+//                        fontSize = 20.sp // Increase the font size
+//                    )
+//                )
+                TextButton(
+                    onClick = {
+                        /* Navigate to new page */
+                    },
+//                    modifier = Modifier.weight(1f),
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.medical_record_icon1),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(32.dp) // Adjust the size of the image
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    ClickableText(
-                        text = AnnotatedString("Medical Records"),
-                        onClick = {
-                            /* Navigate to new page */
-                        },
-                        modifier = Modifier.weight(1f),
-                        style = TextStyle(
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 20.sp // Increase the font size
-                        )
-                    )
-                    Icon(
-                        painter = painterResource(id = R.drawable.arrow_icon),
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp) // Adjust the size of the arrow icon
-                    )
+                    Text(text = "Prescription")
                 }
+                Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowRight, contentDescription = null)
+            }
 
-                Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-                // Prescription
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.medical_record_icon2),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(32.dp) // Adjust the size of the image
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    ClickableText(
-                        text = AnnotatedString("Prescription"),
-                        onClick = {
-/* Navigate to new page */
-                        },
-                        modifier = Modifier.weight(1f),
-                        style = TextStyle(
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 20.sp // Increase the font size
-                        )
-                    )
-                    Icon(
-                        painter = painterResource(id = R.drawable.arrow_icon),
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp) // Adjust the size of the arrow icon
-                    )
-                }
+            // Lab Results
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(16.dp)
+            ) {
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Lab Results
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.labtest),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(32.dp) // Adjust the size of the image
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    ClickableText(
-                        text = AnnotatedString("Lab Results"),
-                        onClick = {
-                            /* Navigate to new page */
-                        },
-                        modifier = Modifier.weight(1f),
-                        style = TextStyle(
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 20.sp // Increase the font size
-                        )
-                    )
-                    Icon(
-                        painter = painterResource(id = R.drawable.arrow_icon),
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp) // Adjust the size of the arrow icon
-                    )
-                }
+                Spacer(modifier = Modifier.width(12.dp))
+                ClickableText(
+                    text = AnnotatedString("Lab Results"),
+                    onClick = {
+                        /* Navigate to new page */
+                    },
+                    modifier = Modifier.weight(1f),
+                )
+                Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowRight, contentDescription = null)
             }
         }
-         Row(
-             modifier = Modifier
-                 .fillMaxWidth()
-                 .padding(16.dp),
-             horizontalArrangement = Arrangement.End,
-             verticalAlignment = Alignment.Bottom
-         )
-         {
-             Spacer(modifier = Modifier.weight(1f))
-             FloatingActionButton(
-                 onClick = { /* Navigate to pet profile form */ },
-                 modifier = Modifier.padding(16.dp)
-             ) {
-                 Icon(Icons.Default.Add, contentDescription = "Add Pet Profile")
-             }
-         }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.Bottom
+        )
+        {
+            Spacer(modifier = Modifier.weight(1f))
+            FloatingActionButton(
+                onClick = { /* Navigate to pet profile form */ },
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add Pet Profile")
+            }
+        }
     }
-
-
 }
 
 
@@ -343,11 +263,6 @@ fun PetIcon(imageRes: Int, text: String) {
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = text,
-            style = TextStyle(
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                color = Color.White
-            )
         )
     }
 }
@@ -365,10 +280,6 @@ fun PetProfile(
     ) {
         Text(
             text = "Pet Profile",
-            style = TextStyle(
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            ),
             modifier = Modifier.padding(bottom = 8.dp)
         )
         Text("Name: $petName")
@@ -383,13 +294,12 @@ fun ClickableRow(
     content: @Composable () -> Unit
 ) {
     Row(
-        modifier = modifier.clickable(onClick = onClick).padding(top = 20.dp),
+        modifier = modifier
+            .clickable(onClick = onClick)
+            .padding(top = 20.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         content()
     }
 }
-@Composable
-fun RowItem(text: String) {
-    Text(text = "- $text", fontSize = 16.sp, color = Color.Black)
-}
+
