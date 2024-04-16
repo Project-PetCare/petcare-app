@@ -1,28 +1,16 @@
 package fi.project.petcare.ui.screens
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowRight
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Store
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,283 +18,288 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import fi.project.petcare.R
+
+@Preview
+@Composable
+fun PreviewHomeScreen() {
+    HomeScreen(
+        user = User(name = "John Doe", email = "johndoe@email.com")
+    )
+}
+
+class User(
+    val name: String,
+    val email: String
+)
+
+class Veterinarian(
+    val name: String,
+    val location: String,
+    val rating: Float,
+    val imageUrl: String,
+)
+
+val veterinarianList = listOf(
+    Veterinarian(
+        name = "Dr. Jane Johnson",
+        location = "Vantaa",
+        rating = 4.6f,
+        imageUrl = "https://www.example.com/image.jpg"
+    ),
+    Veterinarian(
+        name = "Dr. John Brown",
+        location = "Helsinki",
+        rating = 4.7f,
+        imageUrl = "https://www.example.com/image.jpg"
+    ),
+    Veterinarian(
+        name = "Dr. Jane Brown",
+        location = "Espoo",
+        rating = 4.1f,
+        imageUrl = "https://www.example.com/image.jpg"
+    ),
+    Veterinarian(
+        name = "Dr. John White",
+        location = "Vantaa",
+        rating = 4.4f,
+        imageUrl = "https://www.example.com/image.jpg"
+    ),
+    Veterinarian(
+        name = "Dr. Jane White",
+        location = "Helsinki",
+        rating = 4.9f,
+        imageUrl = "https://www.example.com/image.jpg"
+    ),
+)
+
+class HairSalon(
+    val name: String,
+    val location: String,
+    val rating: Float,
+    val imageUrl: String,
+)
+
+val hairSalonList = listOf(
+    HairSalon(
+        name = "Hair Salon 1",
+        location = "Vantaa",
+        rating = 4.6f,
+        imageUrl = "https://www.example.com/image.jpg"
+    ),
+    HairSalon(
+        name = "Hair Salon 2",
+        location = "Helsinki",
+        rating = 4.7f,
+        imageUrl = "https://www.example.com/image.jpg"
+    ),
+    HairSalon(
+        name = "Hair Salon 3",
+        location = "Espoo",
+        rating = 4.1f,
+        imageUrl = "https://www.example.com/image.jpg"
+    ),
+    HairSalon(
+        name = "Hair Salon 4",
+        location = "Vantaa",
+        rating = 4.4f,
+        imageUrl = "https://www.example.com/image.jpg"
+    ),
+    HairSalon(
+        name = "Hair Salon 5",
+        location = "Helsinki",
+        rating = 4.9f,
+        imageUrl = "https://www.example.com/image.jpg"
+    ),
+
+)
 
 @Composable
-fun HomeScreen(onNavigateToProfile: () -> Unit) {
-    Column(
+fun HomeScreen(
+    user: User,
+    shopsList: List<Veterinarian> = veterinarianList
+) {
+    val maxItems = 3
+    val shopsToShow = shopsList.take(maxItems)
+
+    LazyColumn (
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 25.dp, vertical = 16.dp)
-    )
-
-     {
-         Spacer(modifier = Modifier.height(16.dp))
-        // Top bar with text "Pets" and setting icon
-        Row(
-
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = "Pets",
-                style = TextStyle(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp
-                ),
-                modifier = Modifier.weight(1f)
-            )
-            // Setting icon
-        }
-
-
-
-        // Pet Icons
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            PetIcon(imageRes = R.drawable.pet_icon_1, text = "Your Text")
-            PetIcon(imageRes = R.drawable.pet_icon_1, text = "Another Text")
-            PetIcon(imageRes = R.drawable.pet_icon_5, text = "More Text")
-        }
-        // Pet Profile with cover photo
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            ),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Box(
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        item {
+            Card (
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(320.dp)
+                    .padding(top = 16.dp)
             ) {
-                // Cover photo
-                Image(
-                    painter = painterResource(id = R.drawable.pet_icon_1),
-                    contentDescription = "Pet Cover Photo",
+                Row (
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(8.dp)
+
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.AccountCircle,
+                        contentDescription = null,
+                        modifier = Modifier.size(75.dp)
+                    )
+                    Column {
+                        Text(
+                            text = "Hi, ${user.name}",
+                            style = MaterialTheme.typography.titleLarge,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                        Text(
+                            text = user.email,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                    }
+                }
+            }
+            Text(
+                text = "Nearby",
+                textAlign = TextAlign.Start,
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            )
+        }
+        item {
+             Row (
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+
+             ) {
+                 Text(
+                     text = "Veterinarians",
+                        style = MaterialTheme.typography.titleMedium,
+                 )
+                 TextButton(
+                     onClick = { /*TODO*/ }
+                 ) {
+                     Text(text = "See all")
+                 }
+             }
+        }
+        items(veterinarianList.size) { veterinarian ->
+            VeterinarianCard(
+                veterinarian = veterinarianList[veterinarian],
+                onClick = { /* Navigate to veterinarian profile */ }
+            )
+        }
+        item {
+            Row (
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+
+            ) {
+                Text(
+                    text = "Grooming Salons",
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                TextButton(
+                    onClick = { /*TODO*/ }
+                ) {
+                    Text(text = "See all")
+                }
+            }
+        }
+        items(veterinarianList.size) { salon ->
+            HairSalonCard(
+                hairSalon = hairSalonList[salon],
+                onClick = { /* Navigate to hair salon profile */ }
+            )
+        }
+    }
+}
+
+@Composable
+fun HairSalonCard(
+    hairSalon: HairSalon,
+    onClick: () -> Unit
+) {
+    Card (
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row (
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Store,
+                contentDescription = "Store Icon",
+                modifier = Modifier.size(65.dp)
+            )
+            Column (
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                Text(
+                    text = hairSalon.name,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Row (
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp)
-                        .padding(bottom = 20.dp),
-                    contentScale = ContentScale.Crop
-                )
-                // Pet profile details
-                Column(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .align(Alignment.BottomStart)
                 ) {
-
-                    ClickableRow( { onNavigateToProfile() } ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Fluffy",
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.weight(1f)
-                            )
-                            Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowRight, contentDescription = null)
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(end = 8.dp)
-                        ) {
-                            Text(
-                                text = "Type: Dog",
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "Gender: Male",
-                            )
-                        }
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(start = 8.dp)
-                        ) {
-                            Text(
-                                text = "Age: 3 years",
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "Weight: 25kg",
-                            )
-                        }
-                    }
-
+                    Text(
+                        text = hairSalon.location,
+                    )
+                    Text(
+                        text = "Rating: ${hairSalon.rating}",
+                    )
                 }
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            )
+
+    }
+}
+
+@Composable
+fun VeterinarianCard(
+    veterinarian: Veterinarian,
+    onClick: () -> Unit
+) {
+    Card (
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row (
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(8.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(16.dp)
+            Icon(
+                imageVector = Icons.Outlined.Store,
+                contentDescription = "Store Icon",
+                modifier = Modifier.size(65.dp)
+            )
+            Column (
+                modifier = Modifier.padding(horizontal = 16.dp)
             ) {
-
-                Spacer(modifier = Modifier.width(12.dp))
-                // We may use TextButton instead of ClickableText here. You can try it.
-                ClickableText(
-                    text = AnnotatedString("Medical Records"),
-                    onClick = {
-                        /* Navigate to new page */
-                    },
-                    modifier = Modifier.weight(1f),
+                Text(
+                    text = veterinarian.name,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
-                Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowRight, contentDescription = null)
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Prescription
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(16.dp)
-            ) {
-
-                Spacer(modifier = Modifier.width(12.dp))
-//                ClickableText(
-//                    text = AnnotatedString("Prescription"),
-//                    onClick = { /* Navigate to new page */ },
-//                    modifier = Modifier.weight(1f),
-//                    style = TextStyle(
-//                        fontWeight = FontWeight.SemiBold,
-//                        fontSize = 20.sp // Increase the font size
-//                    )
-//                )
-                TextButton(
-                    onClick = {
-                        /* Navigate to new page */
-                    },
-//                    modifier = Modifier.weight(1f),
+                Row (
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
                 ) {
-                    Text(text = "Prescription")
+                    Text(
+                        text = veterinarian.location,
+                    )
+                    Text(
+                        text = "Rating: ${veterinarian.rating}",
+                    )
                 }
-                Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowRight, contentDescription = null)
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Lab Results
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(16.dp)
-            ) {
-
-                Spacer(modifier = Modifier.width(12.dp))
-                ClickableText(
-                    text = AnnotatedString("Lab Results"),
-                    onClick = {
-                        /* Navigate to new page */
-                    },
-                    modifier = Modifier.weight(1f),
-                )
-                Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowRight, contentDescription = null)
-            }
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.Bottom
-        )
-        {
-            Spacer(modifier = Modifier.weight(1f))
-            FloatingActionButton(
-                onClick = { /* Navigate to pet profile form */ },
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Pet Profile")
             }
         }
     }
 }
-
-
-
-@Composable
-fun PetIcon(imageRes: Int, text: String) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .clip(shape = CircleShape)
-            .padding(8.dp)
-    ) {
-        Image(
-            painter = painterResource(id = imageRes),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(80.dp)
-                .clip(CircleShape)
-                .border(2.dp, Color.Blue, CircleShape)
-
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = text,
-        )
-    }
-}
-
-@Composable
-fun PetProfile(
-    petName: String,
-    petAge: Int,
-    petType: String,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Pet Profile",
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        Text("Name: $petName")
-        Text("Age: $petAge")
-        Text("Type: $petType")
-    }
-}
-@Composable
-fun ClickableRow(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
-) {
-    Row(
-        modifier = modifier
-            .clickable(onClick = onClick)
-            .padding(top = 20.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        content()
-    }
-}
-
