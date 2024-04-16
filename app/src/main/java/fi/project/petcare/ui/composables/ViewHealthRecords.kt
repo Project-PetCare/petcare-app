@@ -79,7 +79,7 @@ fun CreateScatterPlot(data: List<HealthRecord>) {
             data.forEach { record ->
                 val x = margin + (record.date.time.toFloat() - xValues.minOrNull()!!) * xScale
                 val y = plotHeight - margin - (record.type.ordinal.toFloat() - yValues.minOrNull()!!) * yScale
-                drawCircle(color = Color.Blue, radius = 5f, center = Offset(x, y))
+                drawCircle(color = Color.White, radius = 5f, center = Offset(x, y))
             }
         }
     }
@@ -89,7 +89,7 @@ fun CreateScatterPlot(data: List<HealthRecord>) {
 
 
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 fun PreviewViewHealthRecords() {
     ViewHealthRecords()
