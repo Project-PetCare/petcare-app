@@ -55,12 +55,7 @@ fun NavGraph(
                 }
             }
             composable(Screen.PetProfile.route) {
-                Dashboard(
-                    onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
-                    navController = navController
-                ) {
-                    ProfileScreen(petName = "Fluffy", navController = navController)
-                }
+                ProfileScreen(petName = "Fluffy", navController = navController)
             }
             composable(Screen.Dashboard.Community.route) {
                 Dashboard(

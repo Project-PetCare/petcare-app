@@ -116,8 +116,6 @@ val hairSalonList = listOf(
 
 )
 
-
-
 @Composable
 fun HomeScreen(
     user: User,
@@ -164,7 +162,7 @@ fun HomeScreen(
                 }
             }
             Text(
-                text = "Nearby you",
+                text = "Nearby",
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier
@@ -303,6 +301,5 @@ fun VeterinarianCard(
                 }
             }
         }
-
     }
 }
