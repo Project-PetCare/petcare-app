@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -22,13 +23,13 @@ import java.util.Date
 // Dummy function to fetch health records (replace with actual implementation)
 fun getDummyHealthRecords(): List<HealthRecord> {
     return listOf(
-        HealthRecord(HealthRecordType.OPERATION, Date(), "Details of operation"),
-        HealthRecord(HealthRecordType.VETERINARIAN_VISIT, Date(), "Details of vet visit"),
-        HealthRecord(HealthRecordType.MEDICATION, Date(), "Details of medication"),
-        HealthRecord(HealthRecordType.SYMPTOM, Date(), "Details of symptom"),
-        HealthRecord(HealthRecordType.ALLERGY, Date(), "Details of allergy"),
-        HealthRecord(HealthRecordType.EXERCISE, Date(), "Details of exercise"),
-        HealthRecord(HealthRecordType.WEIGHT_MEASUREMENT, Date(), "Details of weight measurement")
+        HealthRecord(HealthRecordType.OPERATION, Date(2023-5-5), "Details of operation"),
+        HealthRecord(HealthRecordType.VETERINARIAN_VISIT, Date(2021-9-7), "Details of vet visit"),
+        HealthRecord(HealthRecordType.MEDICATION, Date(2020-3-3), "Details of medication"),
+        HealthRecord(HealthRecordType.SYMPTOM, Date(1992-4-6), "Details of symptom"),
+        HealthRecord(HealthRecordType.ALLERGY, Date(1999-9-9), "Details of allergy"),
+        HealthRecord(HealthRecordType.EXERCISE, Date(2008-3-5), "Details of exercise"),
+        HealthRecord(HealthRecordType.WEIGHT_MEASUREMENT, Date(2005-2-5), "Details of weight measurement")
     )
 }
 
@@ -59,11 +60,16 @@ fun ViewHealthRecords() {
 
 @Composable
 fun CreateScatterPlot(data: List<HealthRecord>) {
-    val plotWidth = 400f
-    val plotHeight = 400f
+    val plotWidth = 900f
+    val plotHeight = 900f
     val margin = 20f
 
+    val backgroundColor = Color.White // Choose your desired background color
+
     Canvas(modifier = Modifier.size(plotWidth.dp)) {
+        // Draw background
+        drawRect(color = backgroundColor, size = Size(plotWidth, plotHeight))
+
         // Calculate the scaling factors for the x and y axes
         val xValues = data.map { it.date.time.toFloat() }
         val yValues = data.map { it.type.ordinal.toFloat() }
@@ -79,7 +85,7 @@ fun CreateScatterPlot(data: List<HealthRecord>) {
             data.forEach { record ->
                 val x = margin + (record.date.time.toFloat() - xValues.minOrNull()!!) * xScale
                 val y = plotHeight - margin - (record.type.ordinal.toFloat() - yValues.minOrNull()!!) * yScale
-                drawCircle(color = Color.White, radius = 5f, center = Offset(x, y))
+                drawCircle(color = Color.Red, radius = 20f, center = Offset(x, y))
             }
         }
     }
