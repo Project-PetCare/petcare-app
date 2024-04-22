@@ -1,36 +1,44 @@
 [versions]
-agp = "8.3.1"
-bom = "2.2.2"
-credentials = "1.2.1"
+agp = "8.3.2"
+supabaseBom = "2.3.0"
+credentials = "1.2.2"
 googleid = "1.1.0"
-kotlin = "1.9.0"
+kotlin = "1.9.23"
 coreKtx = "1.12.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
+<<<<<<< HEAD
 ktorClientAndroid = "2.3.9"
 letsPlotCommon = "4.3.0"
 letsPlotCompose = "1.0.2"
 letsPlotKotlinKernel = "4.7.0"
+=======
+ktorClientAndroid = "2.3.10"
+>>>>>>> main
 lifecycleRuntimeKtx = "2.7.0"
 activityCompose = "1.8.2"
-composeBom = "2024.03.00"
+composeBom = "2024.04.00"
 lifecycleViewmodelCompose = "2.7.0"
 navigationCompose = "2.7.7"
+<<<<<<< HEAD
 materialIconsExtended = "1.6.4"
 appcompat = "1.6.1"
 material = "1.11.0"
+=======
+materialIconsExtended = "1.6.5"
+>>>>>>> main
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
 androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentials" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
-bom = { module = "io.github.jan-tennert.supabase:bom", version.ref = "bom" }
-compose-auth = { module = "io.github.jan-tennert.supabase:compose-auth", version.ref = "bom" }
-compose-auth-ui = { module = "io.github.jan-tennert.supabase:compose-auth-ui", version.ref = "bom" }
+bom = { module = "io.github.jan-tennert.supabase:bom", version.ref = "supabaseBom" }
+compose-auth = { module = "io.github.jan-tennert.supabase:compose-auth", version.ref = "supabaseBom" }
+compose-auth-ui = { module = "io.github.jan-tennert.supabase:compose-auth-ui", version.ref = "supabaseBom" }
 googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
-gotrue-kt = { module = "io.github.jan-tennert.supabase:gotrue-kt", version.ref = "bom" }
+gotrue-kt = { module = "io.github.jan-tennert.supabase:gotrue-kt", version.ref = "supabaseBom" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
