@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Handshake
@@ -18,13 +17,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -82,23 +78,6 @@ fun Register(authState: AuthUiState, onRegister: (username: String?, email: Stri
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 72.dp, vertical = 16.dp)
         )
-        val snackbarHostState = remember { SnackbarHostState() }
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier.padding(vertical = 0.dp, horizontal = 36.dp)
-        ) {
-            Snackbar(
-                snackbarData = it,
-                containerColor = MaterialTheme.colorScheme.onErrorContainer
-            )
-        }
-        if (authState is AuthUiState.Error && authState.messageId == 1) {
-            LaunchedEffect(key1 = authState.message) {
-                snackbarHostState.showSnackbar(
-                    message = authState.message,
-                )
-            }
-        }
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
@@ -220,23 +199,6 @@ fun Login(
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 72.dp, vertical = 16.dp)
         )
-        val snackbarHostState = remember { SnackbarHostState() }
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier.padding(vertical = 0.dp, horizontal = 36.dp)
-        ) {
-            Snackbar(
-                snackbarData = it,
-                containerColor = MaterialTheme.colorScheme.onErrorContainer
-            )
-        }
-        if (authState is AuthUiState.Error && authState.messageId == 2) {
-            LaunchedEffect(key1 = authState.message) {
-                snackbarHostState.showSnackbar(
-                    message = authState.message,
-                )
-            }
-        }
         OutlinedEmailField(
             value = email,
             onValueChange = { email = it },
