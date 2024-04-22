@@ -30,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import fi.project.petcare.viewmodel.AuthUiState
 import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.annotations.SupabaseInternal
 import io.github.jan.supabase.compose.auth.ui.FormComponent
@@ -39,10 +38,17 @@ import io.github.jan.supabase.compose.auth.ui.email.OutlinedEmailField
 import io.github.jan.supabase.compose.auth.ui.password.OutlinedPasswordField
 import io.github.jan.supabase.compose.auth.ui.password.PasswordRule
 import io.github.jan.supabase.compose.auth.ui.password.rememberPasswordRuleList
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class)
 @Composable
-fun Register(authState: AuthUiState, onRegister: (username: String?, email: String, password: String) -> Unit) {
+fun Register(
+    scope: CoroutineScope,
+    bottomSheetState: SheetState,
+    toggleShowSheet: () -> Unit,
+    onRegister: (username: String?, email: String, password: String) -> Unit
+) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -146,14 +152,7 @@ fun Register(authState: AuthUiState, onRegister: (username: String?, email: Stri
                 .padding(horizontal = 64.dp)
                 .height(58.dp)
         ) {
-            if (authState is AuthUiState.Loading) {
-                LoadingIndicator(
-                    modifier = Modifier.size(24.dp),
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            } else {
-                Text("Sign up")
-            }
+            Text("Sign up")
         }
     }
 }
@@ -161,7 +160,9 @@ fun Register(authState: AuthUiState, onRegister: (username: String?, email: Stri
 @OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class, SupabaseInternal::class)
 @Composable
 fun Login(
-    authState: AuthUiState,
+    scope: CoroutineScope,
+    bottomSheetState: SheetState,
+    toggleShowSheet: () -> Unit,
     onLogin: (email: String, password: String) -> Unit
 ) {
     var password by remember { mutableStateOf("") }
@@ -228,21 +229,21 @@ fun Login(
             Text(text = "Forgot password?", color = MaterialTheme.colorScheme.primary)
         }
         Button(
-            onClick = { onLogin(email, password) },
+            onClick = {
+                scope.launch { bottomSheetState.hide() }.invokeOnCompletion {
+                    if (!bottomSheetState.isVisible) {
+                        toggleShowSheet()
+                        onLogin(email, password)
+                    }
+                }
+            },
             enabled = formState.validForm,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 64.dp)
                 .height(58.dp),
         ) {
-            if (authState is AuthUiState.Loading) {
-                LoadingIndicator(
-                    modifier = Modifier.size(24.dp),
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            } else {
-                Text("Log in")
-            }
+            Text("Log in")
         }
     }
 }
