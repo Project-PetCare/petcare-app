@@ -121,6 +121,7 @@ fun Register(
                 PasswordRule.containsUppercase()
             ),
             keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
                 autoCorrect = false,
                 imeAction = ImeAction.Done
             ),
@@ -138,13 +139,21 @@ fun Register(
                 TextButton(
                     onClick = { toggleDialog() },
                 ) {
-                    Text("Accept Terms of Service", style = MaterialTheme.typography.labelSmall)
+                    Text(
+                        text = "Accept Terms of Service",
+                        style = MaterialTheme.typography.labelSmall
+                    )
                 }
             }
         }
         Button(
             onClick = {
-                onRegister(username, email, password)
+                scope.launch { bottomSheetState.hide() }.invokeOnCompletion {
+                    if (!bottomSheetState.isVisible) {
+                        toggleShowSheet()
+                        onRegister(username, email, password)
+                    }
+                }
             },
             enabled = state.validForm,
             modifier = Modifier
@@ -217,6 +226,7 @@ fun Login(
             label = { Text("Password") },
             rules = rememberPasswordRuleList(PasswordRule.minLength(6)),
             keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
                 autoCorrect = false,
                 imeAction = ImeAction.Done
             ),
