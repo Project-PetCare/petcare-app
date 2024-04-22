@@ -18,8 +18,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -38,21 +35,47 @@ import fi.project.petcare.ui.composables.GoogleSignInButton
 import fi.project.petcare.ui.composables.Login
 import fi.project.petcare.ui.composables.Register
 import fi.project.petcare.ui.theme.bg_gr
-import fi.project.petcare.viewmodel.AuthUiState
 import fi.project.petcare.viewmodel.AuthViewModel
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WelcomeScreen(vModel: AuthViewModel, onUserAuthenticated: () -> Unit) {
+fun WelcomeScreen(
+    vModel: AuthViewModel
+) {
     var showSheet by remember { mutableStateOf(false) }
+    val toggleShowSheet = { showSheet = !showSheet }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var isLogin by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val authState by vModel.authUiState.collectAsState()
     val brush = Brush.radialGradient(
         listOf(bg_gr, MaterialTheme.colorScheme.background),
     )
+
+    if (showSheet) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                toggleShowSheet()
+            },
+            sheetState = bottomSheetState,
+            content = {
+                if (!isLogin) {
+                    Register(
+                        scope = scope,
+                        bottomSheetState = bottomSheetState,
+                        toggleShowSheet = toggleShowSheet,
+                        onRegister = vModel::onSignUp
+                    )
+                } else {
+                    Login(
+                        scope = scope,
+                        bottomSheetState = bottomSheetState,
+                        toggleShowSheet = toggleShowSheet,
+                        onLogin = vModel::onSignIn
+                    )
+                }
+            }
+        )
+    }
 
     Scaffold { innerPadding ->
         Box (
@@ -99,7 +122,7 @@ fun WelcomeScreen(vModel: AuthViewModel, onUserAuthenticated: () -> Unit) {
 
                     ) {
                         Button(
-                            onClick = { isLogin = true; showSheet = true },
+                            onClick = { isLogin = true; toggleShowSheet() },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(58.dp)
@@ -107,7 +130,7 @@ fun WelcomeScreen(vModel: AuthViewModel, onUserAuthenticated: () -> Unit) {
                             Text(text = "Sign in")
                         }
                         Button(
-                            onClick = { isLogin = false; showSheet = true},
+                            onClick = { isLogin = false; toggleShowSheet() },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(58.dp)
@@ -120,14 +143,13 @@ fun WelcomeScreen(vModel: AuthViewModel, onUserAuthenticated: () -> Unit) {
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         GoogleSignInButton(
-                            coroutineScope = scope,
-                            onClick = vModel::googleSignIn,
+                            client = vModel.client,
                             modifier = Modifier
                                 .weight(1f)
                                 .height(58.dp)
                         )
                         OutlinedButton(
-                            onClick = { onUserAuthenticated() },
+                            onClick = { /* onUserAuthenticated() */ },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(58.dp)
@@ -138,39 +160,5 @@ fun WelcomeScreen(vModel: AuthViewModel, onUserAuthenticated: () -> Unit) {
                 }
             }
         }
-
-        if (showSheet) {
-            ModalBottomSheet(
-                onDismissRequest = {
-                    showSheet = false
-                },
-                sheetState = bottomSheetState,
-                content = {
-                    if (!isLogin) {
-                        Register(
-                            authState = authState,
-                            onRegister = vModel::signUp
-                        )
-                    } else {
-                        Login(
-                            authState = authState,
-                            onLogin = vModel::signIn
-                        )
-                    }
-                }
-            )
-        }
-
-        if (authState == AuthUiState.Authenticated) {
-            LaunchedEffect(key1 = Unit) {
-                scope.launch { bottomSheetState.hide() }.invokeOnCompletion {
-                    if (!bottomSheetState.isVisible) {
-                        showSheet = false
-                        onUserAuthenticated()
-                    }
-                }
-            }
-        }
-
     }
 }
