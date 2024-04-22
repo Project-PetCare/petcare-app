@@ -4,30 +4,37 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fi.project.petcare.BuildConfig
+import fi.project.petcare.model.data.User
+import fi.project.petcare.model.repository.AuthRepository
+import io.github.jan.supabase.compose.auth.ComposeAuth
+import io.github.jan.supabase.compose.auth.googleNativeLogin
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.exceptions.BadRequestRestException
 import io.github.jan.supabase.gotrue.Auth
-import io.github.jan.supabase.gotrue.ExternalAuthAction
+import io.github.jan.supabase.gotrue.SessionStatus
 import io.github.jan.supabase.gotrue.auth
-import io.github.jan.supabase.gotrue.providers.builtin.Email
-import io.github.jan.supabase.exceptions.RestException
-import io.github.jan.supabase.gotrue.providers.Google
-import io.github.jan.supabase.gotrue.providers.builtin.IDToken
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 
-sealed class AuthUiState {
-    object Unauthenticated : AuthUiState()
-    object Authenticated : AuthUiState()
-    object Loading : AuthUiState()
-    data class Error(val messageId: Int?, val message: String) : AuthUiState()
+sealed interface AuthUiState {
+    data object Unauthenticated : AuthUiState
+    data object Loading : AuthUiState
+    data class Authenticated(val user: User) : AuthUiState
+    data class Error(val message: String) : AuthUiState
 }
 
 class AuthViewModel: ViewModel() {
+    private val apiUrl = BuildConfig.SUPABASE_URL
+    private val apiKey = BuildConfig.SUPABASE_KEY
+    val client = createSupabaseClient(apiUrl, apiKey) {
+        install(Auth)
+        install(ComposeAuth) {
+            googleNativeLogin(serverClientId = BuildConfig.SERVER_CLIENT_ID)
+        }
+    }
+
     private val _authUiState = MutableStateFlow<AuthUiState>(AuthUiState.Unauthenticated)
     val authUiState: StateFlow<AuthUiState> = _authUiState
 
@@ -40,141 +47,119 @@ class AuthViewModel: ViewModel() {
         }
     }
 
-    private val apiUrl = BuildConfig.SUPABASE_URL
-    private val apiKey = BuildConfig.SUPABASE_KEY
-
-    private val supabase = createSupabaseClient(apiUrl, apiKey) {
-        install(Auth) {
-            host = "fi.project.petcare"
-            scheme = "deeplink scheme"
-            defaultExternalAuthAction = ExternalAuthAction.CUSTOM_TABS //defaults to EXTERNAL_BROWSER
-        }
+    init {
+        getCurrentUser()
     }
 
-    fun signUp(userName: String?, userEmail: String, userPassword: String) {
-        _authUiState.value = AuthUiState.Loading
+    private fun getCurrentUser() {
         viewModelScope.launch {
-            try {
-                val user = supabase.auth.signUpWith(Email) {
-                    email = userEmail
-                    password = userPassword
-                    data = buildJsonObject {
-                        put("full_name", userName ?: userEmail)
+            client.auth.sessionStatus.collect { sessionStatus ->
+                Log.i("AuthViewModel", "Session status: $sessionStatus")
+                when (sessionStatus) {
+                    is SessionStatus.LoadingFromStorage -> {
+                        _authUiState.value = AuthUiState.Loading
+                    }
+                    is SessionStatus.Authenticated -> {
+                        _authUiState.value = AuthUiState.Authenticated(
+                            User(
+                                id = sessionStatus.session.user?.id.toString(),
+                                name = sessionStatus
+                                    .session.user?.userMetadata?.get("full_name").toString(),
+                                email = sessionStatus.session.user?.email.toString()
+                            )
+                        )
+                    }
+                    is SessionStatus.NetworkError -> {
+                        _authUiState.value = AuthUiState.Error(
+                            message = "Network error. Please check your internet connection."
+                        )
+                        clearErrorStateWithDelay()
+                    }
+                    is SessionStatus.NotAuthenticated -> {
+                        _authUiState.value = AuthUiState.Unauthenticated
                     }
                 }
-                Log.i("User registered returns: ", user.toString())
-                _authUiState.value = AuthUiState.Authenticated
-            } catch (e: Exception) {
-                Log.e("User registration failed: ", e.toString())
-                _authUiState.value = AuthUiState.Error(
-                    messageId = 1,
-                    message = "Something went wrong. Please try again later."
-                )
-                clearErrorStateWithDelay()
             }
         }
     }
 
-    fun signIn(userEmail: String, userPassword: String) {
+    fun onSignUp(userName: String?, userEmail: String, userPassword: String) {
         _authUiState.value = AuthUiState.Loading
         viewModelScope.launch {
-            try {
-                val user = supabase.auth.signInWith(Email) {
-                    email = userEmail
-                    password = userPassword
-                }
-                Log.i("User signed in returns: ", user.toString())
-                _authUiState.value = AuthUiState.Authenticated
-            } catch (e: BadRequestRestException) {
-                if (e.message?.contains("Email not confirmed") == true) {
-                    _authUiState.value = AuthUiState.Error(
-                        messageId = 2,
-                        message = "Please verify your email address."
-                    )
-                    clearErrorStateWithDelay()
-                } else if (e.message?.contains("Invalid login credentials") == true) {
-                    _authUiState.value = AuthUiState.Error(
-                        messageId = 2,
-                        message = "Email or password is incorrect."
-                    )
-                    clearErrorStateWithDelay()
-                }
-                _authUiState.value = AuthUiState.Error(
-                    messageId = 2,
-                    message = "Something went wrong. Please try again later."
-                )
-            } catch (e: Exception) {
-                Log.e("User sign in failed: ", e.toString())
-                _authUiState.value = AuthUiState.Error(
-                    messageId = 2,
-                    message = "Something went wrong. Please try again later."
-                )
-                clearErrorStateWithDelay()
-            }
-        }
-    }
-
-    fun updateUser(userEmail: String?, userPassword: String?, redirectUrl: String?) {
-        viewModelScope.launch {
-            try {
-                userEmail?.let { email ->
-                    supabase.auth.resetPasswordForEmail(email)
-                }
-                userPassword?.let { newPassword ->
-                    supabase.auth.modifyUser {
-                        password = newPassword
+            val result = AuthRepository(client).signUp(userName, userEmail, userPassword)
+            result.fold(
+                onSuccess = { userInfo ->
+                    if (userInfo != null) {
+                        _authUiState.value = AuthUiState.Authenticated(
+                            User(
+                                id = userInfo.id,
+                                name = userInfo.userMetadata?.get("full_name").toString(),
+                                email = userInfo.email.toString()
+                            )
+                        )
                     }
+                },
+                onFailure = { error ->
+                    Log.e("AuthViewModel", "Error registering user", error)
+                    _authUiState.value = AuthUiState.Error(
+                        message = "Something went wrong. Please try again later."
+                    )
+                    clearErrorStateWithDelay()
                 }
-            } catch (e: Exception) {
-                _authUiState.value = AuthUiState.Error(
-                    messageId = 3,
-                    message = "Something went wrong. Please try again later."
-                )
-                Log.e("User reset password failed: ", e.toString())
-            }
+            )
         }
     }
 
-    fun signOut() {
+    fun onSignIn(userEmail: String, userPassword: String) {
         _authUiState.value = AuthUiState.Loading
         viewModelScope.launch {
-            try {
-                val user = supabase.auth.signOut()
-                Log.i("User signed out returns: ", user.toString())
-                _authUiState.value = AuthUiState.Unauthenticated
-            } catch (e: Exception) {
-                Log.e("User sign out failed: ", e.toString())
-                _authUiState.value = AuthUiState.Error(
-                    messageId = 3,
-                    message = "Something went wrong. Please try again later."
-                )
-            }
+            val result = AuthRepository(client).signIn(userEmail, userPassword)
+            result.fold(
+                onSuccess = { _ ->
+                    /* User is already authenticated, no need to do anything here */
+                },
+                onFailure = { error ->
+                    when (error) {
+                        is BadRequestRestException -> {
+                            if (error.message?.contains("Email not confirmed") == true) {
+                                _authUiState.value = AuthUiState.Error(
+                                    message = "Please verify your email address."
+                                )
+                            } else if (error.message?.contains("Invalid login credentials") == true) {
+                                _authUiState.value = AuthUiState.Error(
+                                    message = "Email or password is incorrect."
+                                )
+                            }
+                        }
+                        else -> {
+                            Log.e("User sign in failed: ", error.toString())
+                            _authUiState.value = AuthUiState.Error(
+                                message = "Something went wrong. Please try again later."
+                            )
+                        }
+                    }
+                    clearErrorStateWithDelay()
+                }
+            )
         }
     }
 
-    // See https://developer.android.com/training/sign-in/passkeys#add-support-dal
-    fun googleSignIn(rawNonce: String, googleIdToken: String) {
+    fun onSignOut() {
+        _authUiState.value = AuthUiState.Loading
         viewModelScope.launch {
-            try {
-                supabase.auth.signInWith(IDToken) {
-                    idToken = googleIdToken
-                    provider = Google
-                    nonce = rawNonce
+            val result = AuthRepository(client).signOut()
+            result.fold(
+                onSuccess = { _ ->
+                    _authUiState.value = AuthUiState.Unauthenticated
+                },
+                onFailure = { error ->
+                    Log.e("AuthViewModel", "Error signing out", error)
+                    _authUiState.value = AuthUiState.Error(
+                        message = "Something went wrong. Please try again later."
+                    )
+                    clearErrorStateWithDelay()
                 }
-                _authUiState.value = AuthUiState.Authenticated
-            } catch (e: RestException) {
-                _authUiState.value = AuthUiState.Error(
-                    messageId = 3,
-                    message = "We are fixing some issues. Please try again later."
-                )
-                Log.e("RestException", e.toString())
-            } catch (e: Exception) {
-                Log.e("Exception", e.toString())
-                _authUiState.value = AuthUiState.Error(
-                    messageId = 3,
-                    message = "Something went wrong. Please try again later."
-                )
-            }
+            )
         }
     }
 }
