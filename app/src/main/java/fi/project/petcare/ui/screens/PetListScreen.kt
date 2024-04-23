@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,6 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import fi.project.petcare.ui.composables.CreateScatterPlot
+import fi.project.petcare.ui.composables.getDummyHealthRecords
 
 @Preview(showBackground = true)
 @Composable
@@ -93,7 +96,19 @@ fun PetListScreen(
                         text = "Some item $item",
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
-                    )
+                    )}
+                    Card (
+                        modifier = Modifier
+                            .size(450.dp, 150.dp)
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 16.dp)
+
+                    ) {
+                    // Add a spacer
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Add the scatter plot
+                    CreateScatterPlot(getDummyHealthRecords())
                 }
             }
         }
