@@ -14,7 +14,7 @@ activityCompose = "1.8.2"
 composeBom = "2024.04.00"
 lifecycleViewmodelCompose = "2.7.0"
 navigationCompose = "2.7.7"
-materialIconsExtended = "1.6.5"
+materialIconsExtended = "1.6.6"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
