@@ -11,9 +11,9 @@ import io.github.jan.supabase.compose.auth.googleNativeLogin
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.exceptions.BadRequestRestException
 import io.github.jan.supabase.gotrue.Auth
+import io.github.jan.supabase.gotrue.SessionSource
 import io.github.jan.supabase.gotrue.SessionStatus
 import io.github.jan.supabase.gotrue.auth
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -38,15 +38,6 @@ class AuthViewModel: ViewModel() {
     private val _authUiState = MutableStateFlow<AuthUiState>(AuthUiState.Unauthenticated)
     val authUiState: StateFlow<AuthUiState> = _authUiState
 
-    private fun clearErrorStateWithDelay(delayMillis: Long? = 2750) {
-        viewModelScope.launch {
-            delayMillis?.let { delay(it) }
-            if (_authUiState.value is AuthUiState.Error) {
-                _authUiState.value = AuthUiState.Unauthenticated
-            }
-        }
-    }
-
     init {
         getCurrentUser()
     }
@@ -60,20 +51,46 @@ class AuthViewModel: ViewModel() {
                         _authUiState.value = AuthUiState.Loading
                     }
                     is SessionStatus.Authenticated -> {
-                        _authUiState.value = AuthUiState.Authenticated(
-                            User(
-                                id = sessionStatus.session.user?.id.toString(),
-                                name = sessionStatus
-                                    .session.user?.userMetadata?.get("full_name").toString(),
-                                email = sessionStatus.session.user?.email.toString()
-                            )
-                        )
+                        when (sessionStatus.source) {
+                            is SessionSource.Storage -> {
+                                Log.i("AuthViewModel", "Session source: Storage")
+                                _authUiState.value = AuthUiState.Authenticated(
+                                    User(
+                                        id = sessionStatus.session.user?.id.toString(),
+                                        name = sessionStatus
+                                            .session.user?.userMetadata?.get("full_name").toString(),
+                                        email = sessionStatus.session.user?.email.toString()
+                                    )
+                                )
+                            }
+                            is SessionSource.SignUp -> {
+                                _authUiState.value = AuthUiState.Error(
+                                    message = "Please verify your email address."
+                                )
+                            }
+
+                            SessionSource.AnonymousSignIn -> TODO()
+                            SessionSource.External -> TODO()
+                            is SessionSource.Refresh -> TODO()
+                            is SessionSource.SignIn -> {
+                                _authUiState.value = AuthUiState.Authenticated(
+                                    User(
+                                        id = sessionStatus.session.user?.id.toString(),
+                                        name = sessionStatus
+                                            .session.user?.userMetadata?.get("full_name").toString(),
+                                        email = sessionStatus.session.user?.email.toString()
+                                    )
+                                )
+                            }
+                            SessionSource.Unknown -> TODO()
+                            is SessionSource.UserChanged -> TODO()
+                            is SessionSource.UserIdentitiesChanged -> TODO()
+                        }
                     }
                     is SessionStatus.NetworkError -> {
                         _authUiState.value = AuthUiState.Error(
-                            message = "Network error. Please check your internet connection."
+                            message = "Please check your internet connection."
                         )
-                        clearErrorStateWithDelay()
                     }
                     is SessionStatus.NotAuthenticated -> {
                         _authUiState.value = AuthUiState.Unauthenticated
@@ -104,7 +121,6 @@ class AuthViewModel: ViewModel() {
                     _authUiState.value = AuthUiState.Error(
                         message = "Something went wrong. Please try again later."
                     )
-                    clearErrorStateWithDelay()
                 }
             )
         }
@@ -116,7 +132,7 @@ class AuthViewModel: ViewModel() {
             val result = AuthRepository(client).signIn(userEmail, userPassword)
             result.fold(
                 onSuccess = { _ ->
-                    /* User is already authenticated, no need to do anything here */
+                    getCurrentUser()
                 },
                 onFailure = { error ->
                     when (error) {
@@ -138,7 +154,6 @@ class AuthViewModel: ViewModel() {
                             )
                         }
                     }
-                    clearErrorStateWithDelay()
                 }
             )
         }
@@ -157,7 +172,6 @@ class AuthViewModel: ViewModel() {
                     _authUiState.value = AuthUiState.Error(
                         message = "Something went wrong. Please try again later."
                     )
-                    clearErrorStateWithDelay()
                 }
             )
         }
