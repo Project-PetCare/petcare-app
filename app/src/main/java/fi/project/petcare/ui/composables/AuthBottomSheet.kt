@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Handshake
@@ -18,13 +17,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import fi.project.petcare.viewmodel.AuthUiState
 import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.annotations.SupabaseInternal
 import io.github.jan.supabase.compose.auth.ui.FormComponent
@@ -43,10 +38,17 @@ import io.github.jan.supabase.compose.auth.ui.email.OutlinedEmailField
 import io.github.jan.supabase.compose.auth.ui.password.OutlinedPasswordField
 import io.github.jan.supabase.compose.auth.ui.password.PasswordRule
 import io.github.jan.supabase.compose.auth.ui.password.rememberPasswordRuleList
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class)
 @Composable
-fun Register(authState: AuthUiState, onRegister: (username: String?, email: String, password: String) -> Unit) {
+fun Register(
+    scope: CoroutineScope,
+    bottomSheetState: SheetState,
+    toggleShowSheet: () -> Unit,
+    onRegister: (username: String?, email: String, password: String) -> Unit
+) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -82,23 +84,6 @@ fun Register(authState: AuthUiState, onRegister: (username: String?, email: Stri
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 72.dp, vertical = 16.dp)
         )
-        val snackbarHostState = remember { SnackbarHostState() }
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier.padding(vertical = 0.dp, horizontal = 36.dp)
-        ) {
-            Snackbar(
-                snackbarData = it,
-                containerColor = MaterialTheme.colorScheme.onErrorContainer
-            )
-        }
-        if (authState is AuthUiState.Error && authState.messageId == 1) {
-            LaunchedEffect(key1 = authState.message) {
-                snackbarHostState.showSnackbar(
-                    message = authState.message,
-                )
-            }
-        }
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
@@ -136,6 +121,7 @@ fun Register(authState: AuthUiState, onRegister: (username: String?, email: Stri
                 PasswordRule.containsUppercase()
             ),
             keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
                 autoCorrect = false,
                 imeAction = ImeAction.Done
             ),
@@ -153,13 +139,21 @@ fun Register(authState: AuthUiState, onRegister: (username: String?, email: Stri
                 TextButton(
                     onClick = { toggleDialog() },
                 ) {
-                    Text("Accept Terms of Service", style = MaterialTheme.typography.labelSmall)
+                    Text(
+                        text = "Accept Terms of Service",
+                        style = MaterialTheme.typography.labelSmall
+                    )
                 }
             }
         }
         Button(
             onClick = {
-                onRegister(username, email, password)
+                scope.launch { bottomSheetState.hide() }.invokeOnCompletion {
+                    if (!bottomSheetState.isVisible) {
+                        toggleShowSheet()
+                        onRegister(username, email, password)
+                    }
+                }
             },
             enabled = state.validForm,
             modifier = Modifier
@@ -167,14 +161,7 @@ fun Register(authState: AuthUiState, onRegister: (username: String?, email: Stri
                 .padding(horizontal = 64.dp)
                 .height(58.dp)
         ) {
-            if (authState is AuthUiState.Loading) {
-                LoadingIndicator(
-                    modifier = Modifier.size(24.dp),
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            } else {
-                Text("Sign up")
-            }
+            Text("Sign up")
         }
     }
 }
@@ -182,7 +169,9 @@ fun Register(authState: AuthUiState, onRegister: (username: String?, email: Stri
 @OptIn(ExperimentalMaterial3Api::class, SupabaseExperimental::class, SupabaseInternal::class)
 @Composable
 fun Login(
-    authState: AuthUiState,
+    scope: CoroutineScope,
+    bottomSheetState: SheetState,
+    toggleShowSheet: () -> Unit,
     onLogin: (email: String, password: String) -> Unit
 ) {
     var password by remember { mutableStateOf("") }
@@ -220,23 +209,6 @@ fun Login(
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 72.dp, vertical = 16.dp)
         )
-        val snackbarHostState = remember { SnackbarHostState() }
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier.padding(vertical = 0.dp, horizontal = 36.dp)
-        ) {
-            Snackbar(
-                snackbarData = it,
-                containerColor = MaterialTheme.colorScheme.onErrorContainer
-            )
-        }
-        if (authState is AuthUiState.Error && authState.messageId == 2) {
-            LaunchedEffect(key1 = authState.message) {
-                snackbarHostState.showSnackbar(
-                    message = authState.message,
-                )
-            }
-        }
         OutlinedEmailField(
             value = email,
             onValueChange = { email = it },
@@ -254,6 +226,7 @@ fun Login(
             label = { Text("Password") },
             rules = rememberPasswordRuleList(PasswordRule.minLength(6)),
             keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
                 autoCorrect = false,
                 imeAction = ImeAction.Done
             ),
@@ -266,21 +239,21 @@ fun Login(
             Text(text = "Forgot password?", color = MaterialTheme.colorScheme.primary)
         }
         Button(
-            onClick = { onLogin(email, password) },
+            onClick = {
+                scope.launch { bottomSheetState.hide() }.invokeOnCompletion {
+                    if (!bottomSheetState.isVisible) {
+                        toggleShowSheet()
+                        onLogin(email, password)
+                    }
+                }
+            },
             enabled = formState.validForm,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 64.dp)
                 .height(58.dp),
         ) {
-            if (authState is AuthUiState.Loading) {
-                LoadingIndicator(
-                    modifier = Modifier.size(24.dp),
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            } else {
-                Text("Log in")
-            }
+            Text("Log in")
         }
     }
 }

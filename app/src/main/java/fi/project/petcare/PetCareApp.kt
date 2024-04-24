@@ -1,26 +1,34 @@
 package fi.project.petcare
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import fi.project.petcare.ui.nav.NavGraph
+import fi.project.petcare.ui.screens.WelcomeScreen
 import fi.project.petcare.ui.theme.PetCareTheme
+import fi.project.petcare.viewmodel.AuthUiState
 import fi.project.petcare.viewmodel.AuthViewModel
+import kotlinx.coroutines.launch
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun PetCareApp() {
     val authViewModel: AuthViewModel = viewModel()
+    val authState by authViewModel.authUiState.collectAsState()
     val navController = rememberNavController()
-
-    var dynamicColors = false
-    // Raw implementation of dynamic colors set by user options
-//    if (authState is AuthUiState.Authenticated) {
-//        dynamicColors = true
-//    }
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val dynamicColors = false
 
     PetCareTheme (
         dynamicColor = dynamicColors
@@ -29,10 +37,34 @@ fun PetCareApp() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            NavGraph(
-                userViewModel = authViewModel,
-                navController = navController
-            )
+            when (authState) {
+                is AuthUiState.Unauthenticated -> {
+                    WelcomeScreen(vModel = authViewModel, snackbarHostState = snackbarHostState)
+                }
+                is AuthUiState.Loading -> {
+                    WelcomeScreen(
+                        vModel = authViewModel,
+                        snackbarHostState = snackbarHostState,
+                        isLoading = true
+                    )
+                }
+                is AuthUiState.Authenticated -> {
+                    // Dashboard
+                    NavGraph(
+                        navController = navController,
+                        authViewModel = authViewModel
+                    )
+                }
+                is AuthUiState.Error -> {
+                    val errorMessage = (authState as AuthUiState.Error).message
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = errorMessage,
+                        )
+                    }
+                    WelcomeScreen(vModel = authViewModel, snackbarHostState = snackbarHostState)
+                }
+            }
         }
     }
 }
