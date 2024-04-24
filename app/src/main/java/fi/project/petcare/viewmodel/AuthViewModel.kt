@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fi.project.petcare.BuildConfig
 import fi.project.petcare.model.data.User
+import fi.project.petcare.model.data.demoUser
 import fi.project.petcare.model.repository.AuthRepository
 import io.github.jan.supabase.compose.auth.ComposeAuth
 import io.github.jan.supabase.compose.auth.googleNativeLogin
@@ -40,6 +41,12 @@ class AuthViewModel: ViewModel() {
 
     init {
         getCurrentUser()
+    }
+
+    fun onDemoSignIn() {
+        _authUiState.value = AuthUiState.Authenticated(
+            User(demoUser.id, demoUser.name, demoUser.email)
+        )
     }
 
     private fun getCurrentUser() {

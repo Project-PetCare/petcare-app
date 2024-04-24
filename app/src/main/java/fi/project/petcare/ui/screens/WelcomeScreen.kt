@@ -165,7 +165,7 @@ fun WelcomeScreen(
                                 .height(58.dp)
                         )
                         OutlinedButton(
-                            onClick = { /* onUserAuthenticated() */ },
+                            onClick = { vModel.onDemoSignIn() },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(58.dp)
