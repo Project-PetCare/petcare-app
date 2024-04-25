@@ -18,6 +18,7 @@ import fi.project.petcare.ui.screens.WelcomeScreen
 import fi.project.petcare.ui.theme.PetCareTheme
 import fi.project.petcare.viewmodel.AuthUiState
 import fi.project.petcare.viewmodel.AuthViewModel
+import fi.project.petcare.viewmodel.PetViewModel
 import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -50,9 +51,11 @@ fun PetCareApp() {
                 }
                 is AuthUiState.Authenticated -> {
                     // Dashboard
+                    val petViewModel: PetViewModel = viewModel()
                     NavGraph(
                         navController = navController,
-                        authViewModel = authViewModel
+                        authViewModel = authViewModel,
+                        petViewModel = petViewModel
                     )
                 }
                 is AuthUiState.Error -> {
