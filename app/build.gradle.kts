@@ -92,6 +92,7 @@ dependencies {
     implementation(libs.googleid)
     // Supabase libraries
     implementation(platform(libs.bom))
+    implementation(libs.postgrest.kt)
     implementation(libs.compose.auth.ui)
     implementation(libs.compose.auth)
     implementation(libs.gotrue.kt)
