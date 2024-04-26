@@ -19,21 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-
-@Preview
-@Composable
-fun PreviewHomeScreen() {
-    HomeScreen(
-        user = User(name = "John Doe", email = "johndoe@email.com")
-    )
-}
-
-class User(
-    val name: String,
-    val email: String
-)
+import fi.project.petcare.model.data.User
 
 class Veterinarian(
     val name: String,
@@ -121,9 +108,6 @@ fun HomeScreen(
     user: User,
     shopsList: List<Veterinarian> = veterinarianList
 ) {
-    val maxItems = 3
-    val shopsToShow = shopsList.take(maxItems)
-
     LazyColumn (
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -149,7 +133,7 @@ fun HomeScreen(
                     )
                     Column {
                         Text(
-                            text = "Hi, ${user.name}",
+                            text = "Hi, ${user.name ?: "User"}",
                             style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier.padding(start = 16.dp)
                         )
@@ -175,7 +159,6 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
-
              ) {
                  Text(
                      text = "Veterinarians",
@@ -227,7 +210,8 @@ fun HairSalonCard(
     onClick: () -> Unit
 ) {
     Card (
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick
     ) {
         Row (
             verticalAlignment = Alignment.CenterVertically,
@@ -269,7 +253,8 @@ fun VeterinarianCard(
     onClick: () -> Unit
 ) {
     Card (
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick
     ) {
         Row (
             verticalAlignment = Alignment.CenterVertically,
