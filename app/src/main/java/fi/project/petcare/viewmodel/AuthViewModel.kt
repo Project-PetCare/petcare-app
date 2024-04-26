@@ -41,7 +41,6 @@ class AuthViewModel: ViewModel() {
     private fun getCurrentUser() {
         viewModelScope.launch {
             client.auth.sessionStatus.collect { sessionStatus ->
-                Log.i("AuthViewModel", "Session status: $sessionStatus")
                 when (sessionStatus) {
                     is SessionStatus.LoadingFromStorage -> {
                         _authUiState.value = AuthUiState.Loading
@@ -49,7 +48,6 @@ class AuthViewModel: ViewModel() {
                     is SessionStatus.Authenticated -> {
                         when (sessionStatus.source) {
                             is SessionSource.Storage -> {
-                                Log.i("AuthViewModel", "Session source: Storage")
                                 _authUiState.value = AuthUiState.Authenticated(
                                     User(
                                         id = sessionStatus.session.user?.id.toString(),
