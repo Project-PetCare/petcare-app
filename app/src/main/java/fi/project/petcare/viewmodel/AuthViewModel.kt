@@ -65,7 +65,15 @@ class AuthViewModel: ViewModel() {
 
                             SessionSource.AnonymousSignIn -> TODO()
                             SessionSource.External -> TODO()
-                            is SessionSource.Refresh -> TODO()
+                            is SessionSource.Refresh ->
+                                _authUiState.value = AuthUiState.Authenticated(
+                                    User(
+                                        id = sessionStatus.session.user?.id.toString(),
+                                        name = sessionStatus
+                                            .session.user?.userMetadata?.get("full_name").toString(),
+                                        email = sessionStatus.session.user?.email.toString()
+                                    )
+                                )
                             is SessionSource.SignIn -> {
                                 _authUiState.value = AuthUiState.Authenticated(
                                     User(
