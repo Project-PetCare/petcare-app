@@ -89,20 +89,12 @@ fun PetInfo(
     ) {
         Row (
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround,
+            horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
             if (pet.imgUrl != null) {
-                Icon(
-                    imageVector = Icons.Outlined.CatchingPokemon,
-                    contentDescription = "Pet Icon",
-                    modifier = Modifier
-                        .size(65.dp)
-                        .clip(CircleShape)
-                )
-            } else {
                 Image(
                     painter = painterResource(id = R.drawable.pet_icon_1),
                     contentDescription = "Pet Cover Photo",
@@ -112,13 +104,22 @@ fun PetInfo(
                         .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape),
                     contentScale = ContentScale.Crop
                 )
+            } else {
+
+                Icon(
+                    imageVector = Icons.Outlined.CatchingPokemon,
+                    contentDescription = "Pet Icon",
+                    modifier = Modifier
+                        .size(65.dp)
+                        .clip(CircleShape)
+                )
             }
             Column (
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Pets,
@@ -132,7 +133,7 @@ fun PetInfo(
                 }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Male,
@@ -146,11 +147,11 @@ fun PetInfo(
                 }
             }
             Column (
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.MonitorWeight,
@@ -164,7 +165,7 @@ fun PetInfo(
                 }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Cake,
@@ -240,7 +241,7 @@ fun PetListScreen(
                     item {
                         Text(
                             text = "Basic Information",
-                            style = MaterialTheme.typography.headlineSmall,
+                            style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -252,7 +253,7 @@ fun PetListScreen(
                     item {
                         Text(
                             text = "Behavioral Notes",
-                            style = MaterialTheme.typography.headlineSmall,
+                            style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
