@@ -15,13 +15,20 @@ import fi.project.petcare.ui.screens.ProfileScreen
 import fi.project.petcare.ui.screens.SettingsScreen
 import fi.project.petcare.viewmodel.AuthUiState
 import fi.project.petcare.viewmodel.AuthViewModel
+import fi.project.petcare.viewmodel.PetViewModel
 
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    petViewModel: PetViewModel
 ) {
     val userState by authViewModel.authUiState.collectAsState()
+    val petState by petViewModel.petUiState.collectAsState()
+    val user =
+        if (userState is AuthUiState.Authenticated)
+            (userState as AuthUiState.Authenticated).user
+        else User(id = "demo-user", name = "John Doe", email = "johndoe@email.com")
 
     NavHost(
         navController = navController,
@@ -32,10 +39,6 @@ fun NavGraph(
                 onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
                 navController = navController
             ) {
-                val user =
-                    if (userState is AuthUiState.Authenticated)
-                        (userState as AuthUiState.Authenticated).user
-                    else User(id = "demo-user", name = "John Doe", email = "johndoe@email.com")
                 HomeScreen(
                     user = user
                 )
@@ -47,6 +50,7 @@ fun NavGraph(
                 navController = navController
             ) {
                 PetListScreen(
+                    petState = petState,
                     onNavigateToProfile = { navController.navigate(Screen.PetProfile.route) }
                 )
             }
