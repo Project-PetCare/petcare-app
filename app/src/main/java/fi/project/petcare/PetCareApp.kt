@@ -1,6 +1,7 @@
 package fi.project.petcare
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -13,11 +14,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import fi.project.petcare.ui.composables.LoadingIndicator
 import fi.project.petcare.ui.nav.NavGraph
 import fi.project.petcare.ui.screens.WelcomeScreen
 import fi.project.petcare.ui.theme.PetCareTheme
+import fi.project.petcare.ui.theme.bg_gr
 import fi.project.petcare.viewmodel.AuthUiState
 import fi.project.petcare.viewmodel.AuthViewModel
+import fi.project.petcare.viewmodel.PetViewModel
 import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -42,17 +46,18 @@ fun PetCareApp() {
                     WelcomeScreen(vModel = authViewModel, snackbarHostState = snackbarHostState)
                 }
                 is AuthUiState.Loading -> {
-                    WelcomeScreen(
-                        vModel = authViewModel,
-                        snackbarHostState = snackbarHostState,
-                        isLoading = true
+                    LoadingIndicator(
+                        modifier = Modifier.aspectRatio(1f),
+                        color = bg_gr
                     )
                 }
                 is AuthUiState.Authenticated -> {
                     // Dashboard
+                    val petViewModel: PetViewModel = viewModel()
                     NavGraph(
                         navController = navController,
-                        authViewModel = authViewModel
+                        authViewModel = authViewModel,
+                        petViewModel = petViewModel
                     )
                 }
                 is AuthUiState.Error -> {

@@ -3,15 +3,11 @@ package fi.project.petcare.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import fi.project.petcare.BuildConfig
+import fi.project.petcare.model.data.SupabaseClientFactory
 import fi.project.petcare.model.data.User
 import fi.project.petcare.model.data.demoUser
 import fi.project.petcare.model.repository.AuthRepository
-import io.github.jan.supabase.compose.auth.ComposeAuth
-import io.github.jan.supabase.compose.auth.googleNativeLogin
-import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.exceptions.BadRequestRestException
-import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.gotrue.SessionSource
 import io.github.jan.supabase.gotrue.SessionStatus
 import io.github.jan.supabase.gotrue.auth
@@ -27,14 +23,7 @@ sealed interface AuthUiState {
 }
 
 class AuthViewModel: ViewModel() {
-    private val apiUrl = BuildConfig.SUPABASE_URL
-    private val apiKey = BuildConfig.SUPABASE_KEY
-    val client = createSupabaseClient(apiUrl, apiKey) {
-        install(Auth)
-        install(ComposeAuth) {
-            googleNativeLogin(serverClientId = BuildConfig.SERVER_CLIENT_ID)
-        }
-    }
+    val client = SupabaseClientFactory.getInstance()
 
     private val _authUiState = MutableStateFlow<AuthUiState>(AuthUiState.Unauthenticated)
     val authUiState: StateFlow<AuthUiState> = _authUiState
@@ -52,7 +41,6 @@ class AuthViewModel: ViewModel() {
     private fun getCurrentUser() {
         viewModelScope.launch {
             client.auth.sessionStatus.collect { sessionStatus ->
-                Log.i("AuthViewModel", "Session status: $sessionStatus")
                 when (sessionStatus) {
                     is SessionStatus.LoadingFromStorage -> {
                         _authUiState.value = AuthUiState.Loading
@@ -60,7 +48,6 @@ class AuthViewModel: ViewModel() {
                     is SessionStatus.Authenticated -> {
                         when (sessionStatus.source) {
                             is SessionSource.Storage -> {
-                                Log.i("AuthViewModel", "Session source: Storage")
                                 _authUiState.value = AuthUiState.Authenticated(
                                     User(
                                         id = sessionStatus.session.user?.id.toString(),
@@ -78,7 +65,15 @@ class AuthViewModel: ViewModel() {
 
                             SessionSource.AnonymousSignIn -> TODO()
                             SessionSource.External -> TODO()
-                            is SessionSource.Refresh -> TODO()
+                            is SessionSource.Refresh ->
+                                _authUiState.value = AuthUiState.Authenticated(
+                                    User(
+                                        id = sessionStatus.session.user?.id.toString(),
+                                        name = sessionStatus
+                                            .session.user?.userMetadata?.get("full_name").toString(),
+                                        email = sessionStatus.session.user?.email.toString()
+                                    )
+                                )
                             is SessionSource.SignIn -> {
                                 _authUiState.value = AuthUiState.Authenticated(
                                     User(

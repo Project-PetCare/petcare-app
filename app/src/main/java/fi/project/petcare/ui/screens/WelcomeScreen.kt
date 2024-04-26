@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -44,8 +43,7 @@ import fi.project.petcare.viewmodel.AuthViewModel
 @Composable
 fun WelcomeScreen(
     vModel: AuthViewModel,
-    snackbarHostState: SnackbarHostState,
-    isLoading: Boolean = false
+    snackbarHostState: SnackbarHostState
 ) {
     var showSheet by remember { mutableStateOf(false) }
     val toggleShowSheet = { showSheet = !showSheet }
@@ -112,22 +110,16 @@ fun WelcomeScreen(
                     )
                 }
                 Box(
-                    contentAlignment = if (isLoading) Alignment.TopCenter else Alignment.BottomCenter,
+                    contentAlignment = Alignment.BottomCenter,
                     modifier = Modifier
                         .background(brush)
                         .paint(
-                            painterResource(id = R.mipmap.ic_cat_welcome)
+                            painterResource(id = R.drawable.ic_cat_welcome)
                         )
                 ) {
                     SnackbarHost(
                         hostState = snackbarHostState
                     )
-                    if (isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.fillMaxSize(0.2f),
-                            color = bg_gr
-                        )
-                    }
                 }
                 Column (
                     verticalArrangement = Arrangement.spacedBy(16.dp)
