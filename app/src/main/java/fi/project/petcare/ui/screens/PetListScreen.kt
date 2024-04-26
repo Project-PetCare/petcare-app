@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import fi.project.petcare.R
 import fi.project.petcare.model.data.PetResponse
 import fi.project.petcare.ui.composables.LoadingIndicator
+import fi.project.petcare.ui.theme.bg_gr
 import fi.project.petcare.viewmodel.PetUiState
 
 @Preview(showBackground = true)
@@ -219,8 +221,8 @@ fun PetListScreen(
     when (petState) {
         is PetUiState.Loading -> {
             LoadingIndicator(
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.primary
+                modifier = Modifier.aspectRatio(1f),
+                color = bg_gr
             )
         }
         is PetUiState.Success -> {
