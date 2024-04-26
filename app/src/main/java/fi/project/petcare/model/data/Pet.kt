@@ -16,6 +16,7 @@ data class PetResponse(
         val weight: Double,
         @SerialName("age_months") val ageMonths: Int,
         @SerialName("behavioral_notes") val notes: String? = null,
+        @SerialName("img_url") val imgUrl: String? = null,
         @SerialName("microchip_id") val microchipId: Int,
         @SerialName("owner_id") val ownerId: String,
         @SerialName("updated_at") val updatedAt: String? = null,
