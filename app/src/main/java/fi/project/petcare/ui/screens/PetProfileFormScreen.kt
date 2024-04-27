@@ -1,20 +1,24 @@
 package fi.project.petcare.ui.screens
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Animation
 import androidx.compose.material.icons.filled.CalendarViewMonth
-import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.MonitorWeight
 import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,29 +27,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import fi.project.petcare.model.data.PetImpl
-
-@Preview
-@Composable
-fun PetProfileFormScreenPreview() {
-//    PetProfileFormScreen(
-//        innerPaddingValues = PaddingValues(8.dp),
-//
-//    )
-}
+import fi.project.petcare.model.data.PetResponse
 
 @Composable
 fun PetProfileFormScreen(
     innerPaddingValues: PaddingValues,
-    newPet: PetImpl,
-    onUpdatePet: (PetImpl) -> Unit
+    newPet: PetResponse.Pet,
+    onUpdatePet: (PetResponse.Pet) -> Unit
 ) {
+    val radioOptions = listOf("Female", "Neutered", "Male")
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
     var petNameError by remember { mutableStateOf("") }
-    var genderError by remember { mutableStateOf("") }
     var weightError by remember { mutableStateOf("") }
     var speciesError by remember { mutableStateOf("") }
     var breedError by remember { mutableStateOf("") }
@@ -111,28 +107,31 @@ fun PetProfileFormScreen(
                 }
             )
         }
-        item {
-            // Gender field with validation
-            OutlinedTextField(
-                value = newPet.gender,
-                onValueChange = {
-                    onUpdatePet(newPet.copy(gender = it))
-                },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next,
-                ),
-                shape = MaterialTheme.shapes.large,
-                label = { Text("Gender") },
-                leadingIcon = { Icon(imageVector = Icons.Default.Category, contentDescription = null) },
-                isError = genderError.isNotEmpty(),
-                singleLine = true,
-                supportingText = {
-                    Text(
-                        text = genderError
+        items(radioOptions) { option ->
+            Row (
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp, horizontal = 48.dp)
+                    .selectable(
+                        selected = (option == selectedOption),
+                        onClick = {
+                            onUpdatePet(newPet.copy(gender = option))
+                            onOptionSelected(option)
+                        },
+                        role = Role.RadioButton
                     )
-                }
-            )
+            ) {
+                RadioButton(
+                    selected = (option == selectedOption),
+                    onClick = null
+                )
+                Text(
+                    text = option,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+            }
         }
         item {
             // Weight field with validation
@@ -158,6 +157,7 @@ fun PetProfileFormScreen(
                 }
             )
         }
+
         item {
             // Species field with validation
             OutlinedTextField(
@@ -219,7 +219,7 @@ fun PetProfileFormScreen(
                     imeAction = ImeAction.Done,
                 ),
                 shape = MaterialTheme.shapes.large,
-                label = { Text("Age") },
+                label = { Text("Age months") },
                 leadingIcon = { Icon(imageVector = Icons.Default.CalendarViewMonth, contentDescription = null) },
                 isError = ageMonthsError.isNotEmpty(),
                 singleLine = true,
