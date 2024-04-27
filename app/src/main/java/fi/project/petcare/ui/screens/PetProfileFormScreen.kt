@@ -23,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -81,10 +80,11 @@ fun PetProfileFormScreen(
                 leadingIcon = { Icon(imageVector = Icons.Default.Numbers, contentDescription = null) },
                 isError = microchipIdError.isNotEmpty(),
                 singleLine = true,
-            )
-            Text(
-                text = microchipIdError,
-                color = Color.Red
+                supportingText = {
+                    Text(
+                        text = microchipIdError
+                    )
+                }
             )
         }
         item {
@@ -103,11 +103,12 @@ fun PetProfileFormScreen(
                 label = { Text("Pet Name") },
                 leadingIcon = { Icon(imageVector = Icons.Default.Pets, contentDescription = null) },
                 isError = petNameError.isNotEmpty(),
-                singleLine = true
-            )
-            Text(
-                text = petNameError,
-                color = Color.Red,
+                singleLine = true,
+                supportingText = {
+                    Text(
+                        text = petNameError
+                    )
+                }
             )
         }
         item {
@@ -125,11 +126,12 @@ fun PetProfileFormScreen(
                 label = { Text("Gender") },
                 leadingIcon = { Icon(imageVector = Icons.Default.Category, contentDescription = null) },
                 isError = genderError.isNotEmpty(),
-                singleLine = true
-            )
-            Text(
-                text = genderError,
-                color = Color.Red,
+                singleLine = true,
+                supportingText = {
+                    Text(
+                        text = genderError
+                    )
+                }
             )
         }
         item {
@@ -148,11 +150,12 @@ fun PetProfileFormScreen(
                 label = { Text("Weight") },
                 leadingIcon = { Icon(imageVector = Icons.Default.MonitorWeight, contentDescription = null) },
                 isError = weightError.isNotEmpty(),
-                singleLine = true
-            )
-            Text(
-                text = weightError,
-                color = Color.Red,
+                singleLine = true,
+                supportingText = {
+                    Text(
+                        text = weightError
+                    )
+                }
             )
         }
         item {
@@ -171,11 +174,12 @@ fun PetProfileFormScreen(
                 label = { Text("Species") },
                 leadingIcon = { Icon(imageVector = Icons.Default.Animation, contentDescription = null) },
                 isError = speciesError.isNotEmpty(),
-                singleLine = true
-            )
-            Text(
-                text = speciesError,
-                color = Color.Red,
+                singleLine = true,
+                supportingText = {
+                    Text(
+                        text = speciesError
+                    )
+                }
             )
         }
         item {
@@ -194,11 +198,12 @@ fun PetProfileFormScreen(
                 shape = MaterialTheme.shapes.large,
                 leadingIcon = { Icon(imageVector = Icons.Default.Pets, contentDescription = null) },
                 isError = breedError.isNotEmpty(),
-                singleLine = true
-            )
-            Text(
-                text = breedError,
-                color = Color.Red,
+                singleLine = true,
+                supportingText = {
+                    Text(
+                        text = breedError
+                    )
+                }
             )
         }
         item {
@@ -217,12 +222,12 @@ fun PetProfileFormScreen(
                 label = { Text("Age") },
                 leadingIcon = { Icon(imageVector = Icons.Default.CalendarViewMonth, contentDescription = null) },
                 isError = ageMonthsError.isNotEmpty(),
-                singleLine = true
-            )
-
-            Text(
-                text = ageMonthsError,
-                color = Color.Red
+                singleLine = true,
+                supportingText = {
+                    Text(
+                        text = ageMonthsError
+                    )
+                }
             )
         }
     }
