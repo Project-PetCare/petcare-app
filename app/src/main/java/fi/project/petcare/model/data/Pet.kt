@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 data class PetResponse(
-    val pets: List<Pet>
+    val pets: List<Pet>? = null,
 ) {
     @Serializable
     data class Pet(
