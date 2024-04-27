@@ -118,8 +118,7 @@ val hairSalonList = listOf(
 
 @Composable
 fun HomeScreen(
-    user: User,
-    shopsList: List<Veterinarian> = veterinarianList
+    user: User
 ) {
     LazyColumn (
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -147,7 +146,7 @@ fun HomeScreen(
                     )
                     Column {
                         Text(
-                            text = "Hi, ${user.name ?: "User"}",
+                            text = "Hi, " + user.name?.trim('"'),
                             style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier.padding(start = 16.dp)
                         )
