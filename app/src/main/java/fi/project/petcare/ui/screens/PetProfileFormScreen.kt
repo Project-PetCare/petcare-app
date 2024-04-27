@@ -20,6 +20,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -34,21 +36,21 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun PetProfileFormScreen() {
     // State variables to hold form values and validation errors
+    var microchipId by remember { mutableIntStateOf(0) }
     var name by remember { mutableStateOf("") }
     var weight by remember { mutableStateOf("") }
     var species by remember { mutableStateOf("") }
     var breed by remember { mutableStateOf("") }
-    var age_months by remember { mutableStateOf("") }
-    val genderOptions = listOf("Male", "Female", "Other")
+    var ageMonths by remember { mutableDoubleStateOf(0.0) }
     var petNameError by remember { mutableStateOf("") }
     var genderError by remember { mutableStateOf("") }
     var weightError by remember { mutableStateOf("") }
     var speciesError by remember { mutableStateOf("") }
     var breedError by remember { mutableStateOf("") }
-    var age_monthsError by remember { mutableStateOf("") }
-    var microchipId by remember { mutableStateOf("") }
+    var ageMonthsError by remember { mutableStateOf("") }
     var selectedGender by remember { mutableStateOf("") }
     var microchipIdError by remember { mutableStateOf("") }
+
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -65,28 +67,33 @@ fun PetProfileFormScreen() {
 
         // Microchip ID field with validation
         OutlinedTextField(
-            value = microchipId,
+            value = microchipId.toString(), // Convert Int to String for TextField
             onValueChange = {
-                microchipId = it
+                microchipId = it.toIntOrNull() ?: 0 // Convert String to Int or default to 0 if conversion fails
                 microchipIdError = if (it.isEmpty()) "Microchip ID cannot be empty" else ""
             },
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
+                keyboardType = KeyboardType.Number, // Numeric keyboard type
                 imeAction = ImeAction.Next,
             ),
             shape = MaterialTheme.shapes.large,
-            label = { Text("Microchip ID") },
+            label = {
+                Text(
+                    "Microchip ID",
+                )
+            },
             leadingIcon = { Icon(imageVector = Icons.Default.Numbers, contentDescription = null) },
             isError = microchipIdError.isNotEmpty(),
             singleLine = true,
             modifier = Modifier.padding(bottom = 16.dp)
         )
+
         Text(
             text = microchipIdError,
             color = Color.Red,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
 
-
-            )
 
         // Pet name field with validation
         OutlinedTextField(
@@ -110,9 +117,7 @@ fun PetProfileFormScreen() {
         Text(
             text = petNameError,
             color = Color.Red,
-
-
-            )
+ )
 
         // Gender field with validation
 
@@ -156,7 +161,6 @@ fun PetProfileFormScreen() {
         Text(
             text = weightError,
             color = Color.Red,
-
             )
 
         // Species field with validation
@@ -180,7 +184,6 @@ fun PetProfileFormScreen() {
         Text(
             text = speciesError,
             color = Color.Red,
-
             )
 
         // Breed field with validation
@@ -204,32 +207,32 @@ fun PetProfileFormScreen() {
         Text(
             text = breedError,
             color = Color.Red,
-
             )
 
         // Birthdate field with validation
         OutlinedTextField(
-            value = age_months,
+            value = ageMonths.toString(), // Convert Double to String for TextField
             onValueChange = {
-                age_months = it
-                age_monthsError = if (it.isEmpty()) "Age cannot be empty" else ""
+                ageMonths = it.toDoubleOrNull() ?: 0.0 // Convert String to Double or default to 0.0 if conversion fails
+                ageMonthsError = if (it.isEmpty()) "Age cannot be empty" else ""
             },
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
+                keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Next,
             ),
             shape = MaterialTheme.shapes.large,
             label = { Text("Age") },
             leadingIcon = { Icon(imageVector = Icons.Default.CalendarViewMonth, contentDescription = null) },
-            isError = age_monthsError.isNotEmpty(),
+            isError = ageMonthsError.isNotEmpty(),
             singleLine = true,
             modifier = Modifier.padding(bottom = 16.dp)
         )
-        Text(
-            text = age_monthsError,
-            color = Color.Red,
 
-            )
+        Text(
+            text = ageMonthsError,
+            color = Color.Red,
+            modifier = Modifier.padding(start = 16.dp)
+        )
 
 
         // Save button
