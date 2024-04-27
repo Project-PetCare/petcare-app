@@ -19,27 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fi.project.petcare.model.data.PetResponse
+import fi.project.petcare.ui.screens.PetProfileFormScreen
 import kotlinx.coroutines.launch
-
-//@Preview
-//@Composable
-//fun FullScreenModalPreview() {
-//    FullScreenModal(
-//        showDialog = true,
-//        toggleShowFullDialog = {},
-//        pet = PetResponse.Pet(
-//            id = "1",
-//            name = "Fluffy",
-//            species = "Cat",
-//            breed = "Siamese",
-//            ageMonths = 3,
-//            microchipId = 1234578,
-//            ownerId = "1",
-//            gender = "Female",
-//            weight = 3.5,
-//        )
-//    )
-//}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,12 +28,14 @@ fun FullScreenModal(
     showModal: Boolean,
     toggleShowFullModal: () -> Unit,
     onSubmit: (PetResponse.Pet) -> Unit = {},
-    pet: PetResponse.Pet
+    newPet: PetResponse.Pet,
+    onUpdatePet: (PetResponse.Pet) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     if (showModal) {
         ModalBottomSheet(
+            shape = MaterialTheme.shapes.extraSmall,
             onDismissRequest = { toggleShowFullModal() },
             sheetState = bottomSheetState,
             content = {
@@ -60,6 +43,7 @@ fun FullScreenModal(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
                         TopAppBar(
+                            modifier = Modifier.padding(bottom = 4.dp),
                             navigationIcon = {
                                 IconButton(
                                     onClick = {
@@ -78,7 +62,7 @@ fun FullScreenModal(
                             },
                             title = {
                                 Text(
-                                    text = "Pet profile",
+                                    text = "New pet profile",
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )
@@ -88,7 +72,7 @@ fun FullScreenModal(
                                     onClick = {
                                         scope.launch { bottomSheetState.hide() }.invokeOnCompletion {
                                             if (!bottomSheetState.isVisible) {
-                                                onSubmit(pet)
+                                                onSubmit(newPet)
                                                 toggleShowFullModal()
                                             }
                                         }
@@ -105,13 +89,11 @@ fun FullScreenModal(
                         )
                     }
                 ) { innerPadding ->
-                    // TODO: Add pet profile form
-                    repeat(35) {
-                        Text(
-                            text = "Pet profile form",
-                            modifier = Modifier.padding(innerPadding).padding(16.dp)
-                        )
-                    }
+                    PetProfileFormScreen(
+                        innerPadding,
+                        newPet,
+                        onUpdatePet
+                    )
                 }
             }
         )
