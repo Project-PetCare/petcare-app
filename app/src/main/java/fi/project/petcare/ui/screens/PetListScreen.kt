@@ -23,7 +23,6 @@ import androidx.compose.material.icons.outlined.MonitorWeight
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -32,55 +31,55 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import fi.project.petcare.R
 import fi.project.petcare.model.data.PetResponse
+import fi.project.petcare.ui.composables.FullScreenModal
 import fi.project.petcare.ui.composables.LoadingIndicator
 import fi.project.petcare.ui.theme.bg_gr
 import fi.project.petcare.viewmodel.PetUiState
+import fi.project.petcare.viewmodel.PetViewModel
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewPetListScreen() {
-    Surface {
-        PetListScreen(
-            onNavigateToProfile = {},
-            petState = PetUiState.Success(
-                listOf(
-                    PetResponse.Pet(
-                        name = "Max",
-                        breed = "Golden Retriever",
-                        weight = 25.0,
-                        species = "Dog",
-                        ageMonths = 12,
-                        gender = "Male",
-                        notes = "Very friendly and playful",
-                        microchipId = 12456,
-                        ownerId = "1234567890"
-                    ),
-                    PetResponse.Pet(
-                        name = "Luna",
-                        breed = "Siamese",
-                        weight = 5.0,
-                        species = "Cat",
-                        ageMonths = 12,
-                        gender = "Female",
-                        notes = "Very friendly and playful",
-                        microchipId = 12456,
-                        ownerId = "1234567890"
-
-                    )
-                )
-            )
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewPetListScreen() {
+//    Surface {
+//        PetListScreen(
+//            petState = PetUiState.Success(
+//                listOf(
+//                    PetResponse.Pet(
+//                        name = "Max",
+//                        breed = "Golden Retriever",
+//                        weight = 25.0,
+//                        species = "Dog",
+//                        ageMonths = 12,
+//                        gender = "Male",
+//                        notes = "Very friendly and playful",
+//                        microchipId = 12456,
+//                        ownerId = "1234567890"
+//                    ),
+//                    PetResponse.Pet(
+//                        name = "Luna",
+//                        breed = "Siamese",
+//                        weight = 5.0,
+//                        species = "Cat",
+//                        ageMonths = 12,
+//                        gender = "Female",
+//                        notes = "Very friendly and playful",
+//                        microchipId = 12456,
+//                        ownerId = "1234567890"
+//
+//                    )
+//                )
+//            )
+//        )
+//    }
+//}
 
 @Composable
 fun PetHeader(
     name: String,
-    onNavigateToProfile: () -> Unit
+    toggleShowFullDialog: () -> Unit,
 ) {
     Row (
         verticalAlignment = Alignment.CenterVertically,
@@ -89,7 +88,7 @@ fun PetHeader(
             .height(45.dp)
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.surface)
     ) {
         Text(
             text = name,
@@ -97,7 +96,7 @@ fun PetHeader(
             modifier = Modifier.weight(1f)
         )
         TextButton(
-            onClick = { onNavigateToProfile() }
+            onClick = { toggleShowFullDialog() }
         ) {
             Text(
                 text ="Edit"
@@ -110,10 +109,11 @@ fun PetHeader(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PetListScreen(
-    onNavigateToProfile: () -> Unit,
-    petState: PetUiState
+    petViewModel: PetViewModel,
+    petState: PetUiState,
+    showModal: Boolean,
+    toggleShowModal: () -> Unit
 ) {
-
     when (petState) {
         is PetUiState.Loading -> {
             LoadingIndicator(
@@ -130,7 +130,7 @@ fun PetListScreen(
                     stickyHeader {
                         PetHeader(
                             name = pet.name,
-                            onNavigateToProfile = onNavigateToProfile
+                            toggleShowFullDialog = toggleShowModal
                         )
                     }
                     item {
@@ -140,6 +140,13 @@ fun PetListScreen(
                     }
                 }
             }
+            val pet = petState.pets.first()
+            FullScreenModal(
+                showModal = showModal,
+                toggleShowFullModal = toggleShowModal,
+                onSubmit = petViewModel::upsertPet,
+                pet = pet
+            )
         }
         is PetUiState.Error -> {
             Text(text = petState.message)

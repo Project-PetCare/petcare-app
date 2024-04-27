@@ -4,6 +4,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -37,7 +40,7 @@ fun NavGraph(
         composable(Screen.Dashboard.Home.route) {
             Dashboard(
                 onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
-                navController = navController
+                navController = navController,
             ) {
                 HomeScreen(
                     user = user
@@ -45,13 +48,18 @@ fun NavGraph(
             }
         }
         composable(Screen.Dashboard.Pets.route) {
+            var showModal by remember { mutableStateOf(false) }
+            val toggleShowModal = { showModal = !showModal }
             Dashboard(
                 onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
-                navController = navController
+                navController = navController,
+                onAddPetClick = { toggleShowModal() }
             ) {
                 PetListScreen(
                     petState = petState,
                     petViewModel = petViewModel,
+                    toggleShowModal = toggleShowModal,
+                    showModal = showModal
                 )
             }
         }
