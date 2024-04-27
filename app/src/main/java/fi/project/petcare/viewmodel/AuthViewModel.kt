@@ -107,16 +107,10 @@ class AuthViewModel: ViewModel() {
         viewModelScope.launch {
             val result = AuthRepository(client).signUp(userName, userEmail, userPassword)
             result.fold(
-                onSuccess = { userInfo ->
-                    if (userInfo != null) {
-                        _authUiState.value = AuthUiState.Authenticated(
-                            User(
-                                id = userInfo.id,
-                                name = userInfo.userMetadata?.get("full_name").toString(),
-                                email = userInfo.email.toString()
-                            )
-                        )
-                    }
+                onSuccess = { _ ->
+                    _authUiState.value = AuthUiState.Error(
+                        message = "Please verify your email address."
+                    )
                 },
                 onFailure = { error ->
                     Log.e("AuthViewModel", "Error registering user", error)
