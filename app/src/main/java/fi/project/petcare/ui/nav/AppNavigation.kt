@@ -51,7 +51,7 @@ fun NavGraph(
             ) {
                 PetListScreen(
                     petState = petState,
-                    onNavigateToProfile = { navController.navigate(Screen.PetProfile.route) }
+                    petViewModel = petViewModel,
                 )
             }
         }
