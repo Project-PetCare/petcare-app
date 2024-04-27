@@ -1,9 +1,8 @@
 package fi.project.petcare.ui.screens
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -13,7 +12,6 @@ import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.MonitorWeight
 import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.filled.Pets
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -33,38 +31,39 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+@Preview
 @Composable
-fun PetProfileFormScreen() {
+fun PetProfileFormScreenPreview() {
+    PetProfileFormScreen(innerPaddingValues = PaddingValues(8.dp))
+}
+
+@Composable
+fun PetProfileFormScreen(
+    innerPaddingValues: PaddingValues,
+) {
     // State variables to hold form values and validation errors
     var microchipId by remember { mutableIntStateOf(0) }
     var name by remember { mutableStateOf("") }
-    var weight by remember { mutableStateOf("") }
+    var weight by remember { mutableDoubleStateOf(0.0) }
     var species by remember { mutableStateOf("") }
     var breed by remember { mutableStateOf("") }
-    var ageMonths by remember { mutableDoubleStateOf(0.0) }
+    var ageMonths by remember { mutableIntStateOf(0) }
+    var selectedGender by remember { mutableStateOf("") }
     var petNameError by remember { mutableStateOf("") }
     var genderError by remember { mutableStateOf("") }
     var weightError by remember { mutableStateOf("") }
     var speciesError by remember { mutableStateOf("") }
     var breedError by remember { mutableStateOf("") }
     var ageMonthsError by remember { mutableStateOf("") }
-    var selectedGender by remember { mutableStateOf("") }
     var microchipIdError by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
-            .fillMaxHeight()
-            .padding(16.dp),
+            .padding(innerPaddingValues)
+            .padding(16.dp)
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Create a account for you pet",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
-
-
-        )
-
         // Microchip ID field with validation
         OutlinedTextField(
             value = microchipId.toString(), // Convert Int to String for TextField
@@ -85,15 +84,11 @@ fun PetProfileFormScreen() {
             leadingIcon = { Icon(imageVector = Icons.Default.Numbers, contentDescription = null) },
             isError = microchipIdError.isNotEmpty(),
             singleLine = true,
-            modifier = Modifier.padding(bottom = 16.dp)
         )
-
         Text(
             text = microchipIdError,
-            color = Color.Red,
-            modifier = Modifier.padding(bottom = 16.dp)
+            color = Color.Red
         )
-
 
         // Pet name field with validation
         OutlinedTextField(
@@ -110,14 +105,12 @@ fun PetProfileFormScreen() {
             label = { Text("Pet Name") },
             leadingIcon = { Icon(imageVector = Icons.Default.Pets, contentDescription = null) },
             isError = petNameError.isNotEmpty(),
-            singleLine = true,
-
-            modifier = Modifier.padding(bottom = 16.dp)
+            singleLine = true
         )
         Text(
             text = petNameError,
             color = Color.Red,
- )
+        )
 
         // Gender field with validation
 
@@ -132,19 +125,17 @@ fun PetProfileFormScreen() {
             label = { Text("Gender") },
             leadingIcon = { Icon(imageVector = Icons.Default.Category, contentDescription = null) },
             isError = genderError.isNotEmpty(),
-            singleLine = true,
-            modifier = Modifier.padding(bottom = 16.dp)
+            singleLine = true
         )
         Text(
             text = genderError,
             color = Color.Red,
-
-            )
+        )
         // Weight field with validation
         OutlinedTextField(
-            value = weight,
+            value = weight.toString(),
             onValueChange = {
-                weight = it
+                weight = it.toDoubleOrNull() ?: 0.0
                 weightError = if (it.isEmpty()) "Weight cannot be empty" else ""
             },
             keyboardOptions = KeyboardOptions(
@@ -155,13 +146,12 @@ fun PetProfileFormScreen() {
             label = { Text("Weight") },
             leadingIcon = { Icon(imageVector = Icons.Default.MonitorWeight, contentDescription = null) },
             isError = weightError.isNotEmpty(),
-            singleLine = true,
-            modifier = Modifier.padding(bottom = 16.dp)
+            singleLine = true
         )
         Text(
             text = weightError,
             color = Color.Red,
-            )
+        )
 
         // Species field with validation
         OutlinedTextField(
@@ -178,13 +168,12 @@ fun PetProfileFormScreen() {
             label = { Text("Species") },
             leadingIcon = { Icon(imageVector = Icons.Default.Animation, contentDescription = null) },
             isError = speciesError.isNotEmpty(),
-            singleLine = true,
-            modifier = Modifier.padding(bottom = 16.dp)
+            singleLine = true
         )
         Text(
             text = speciesError,
             color = Color.Red,
-            )
+        )
 
         // Breed field with validation
         OutlinedTextField(
@@ -201,19 +190,18 @@ fun PetProfileFormScreen() {
             shape = MaterialTheme.shapes.large,
             leadingIcon = { Icon(imageVector = Icons.Default.Pets, contentDescription = null) },
             isError = breedError.isNotEmpty(),
-            singleLine = true,
-            modifier = Modifier.padding(bottom = 16.dp)
+            singleLine = true
         )
         Text(
             text = breedError,
             color = Color.Red,
-            )
+        )
 
         // Birthdate field with validation
         OutlinedTextField(
             value = ageMonths.toString(), // Convert Double to String for TextField
             onValueChange = {
-                ageMonths = it.toDoubleOrNull() ?: 0.0 // Convert String to Double or default to 0.0 if conversion fails
+                ageMonths = it.toIntOrNull() ?: 0  // Convert String to Double or default to 0.0 if conversion fails
                 ageMonthsError = if (it.isEmpty()) "Age cannot be empty" else ""
             },
             keyboardOptions = KeyboardOptions(
@@ -224,34 +212,12 @@ fun PetProfileFormScreen() {
             label = { Text("Age") },
             leadingIcon = { Icon(imageVector = Icons.Default.CalendarViewMonth, contentDescription = null) },
             isError = ageMonthsError.isNotEmpty(),
-            singleLine = true,
-            modifier = Modifier.padding(bottom = 16.dp)
+            singleLine = true
         )
 
         Text(
             text = ageMonthsError,
-            color = Color.Red,
-            modifier = Modifier.padding(start = 16.dp)
+            color = Color.Red
         )
-
-
-        // Save button
-        Button(
-            onClick = {
-
-            },
-
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 64.dp)
-                .height(58.dp)
-        ) {
-            Text("Submit")
-        }
-    }}
-
-@Preview
-@Composable
-fun PetProfileFormScreenPreview() {
-    PetProfileFormScreen()
+    }
 }
