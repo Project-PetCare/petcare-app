@@ -20,6 +20,7 @@ import androidx.navigation.NavController
 fun PetCareTopBar(
     navController: NavController,
     onSettingsClick: () -> Unit,
+    onAddClick: () -> Unit? = {},
     scrollBehavior: TopAppBarScrollBehavior
 ) {
     TopAppBar(
@@ -36,7 +37,9 @@ fun PetCareTopBar(
         },
         actions = {
             if (navController.currentDestination?.route == "Pets") {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(
+                    onClick = { onAddClick() }
+                ) {
                     Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
                 }
             } else {

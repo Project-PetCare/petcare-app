@@ -12,7 +12,12 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Dashboard(onNavigateToSettings: () -> Unit, navController: NavController, content: @Composable () -> Unit) {
+fun Dashboard(
+    onNavigateToSettings: () -> Unit,
+    onAddPetClick: () -> Unit? = {},
+    navController: NavController,
+    content: @Composable () -> Unit
+) {
     val scrollTopBarBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
@@ -21,6 +26,7 @@ fun Dashboard(onNavigateToSettings: () -> Unit, navController: NavController, co
             PetCareTopBar(
                 navController = navController,
                 onSettingsClick = { onNavigateToSettings() },
+                onAddClick = { onAddPetClick() },
                 scrollBehavior = scrollTopBarBehavior
             )
         },
