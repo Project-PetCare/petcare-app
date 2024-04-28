@@ -146,10 +146,10 @@ fun HomeScreen(
                     )
                     Column {
                         Text(
-                            text = "Hi, " + user.name?.trim('"'),
-                            style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.padding(start = 16.dp)
-                        )
+                                text = ("Hi " + if (user.name == "null") "there!" else user.name?.trim('"')),
+                                style = MaterialTheme.typography.titleLarge,
+                                modifier = Modifier.padding(start = 16.dp)
+                            )
                         Text(
                             text = user.email,
                             style = MaterialTheme.typography.bodyMedium,
