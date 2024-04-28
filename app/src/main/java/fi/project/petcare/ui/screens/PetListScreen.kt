@@ -24,9 +24,11 @@ import androidx.compose.material.icons.filled.Female
 import androidx.compose.material.icons.filled.Male
 import androidx.compose.material.icons.outlined.Cake
 import androidx.compose.material.icons.outlined.CatchingPokemon
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.MonitorWeight
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -48,8 +50,8 @@ import fi.project.petcare.viewmodel.PetViewModel
 
 @Composable
 fun PetHeader(
-    name: String,
     toggleShowFullDialog: () -> Unit,
+    onDelete: () -> Unit = {}
 ) {
     Row (
         verticalAlignment = Alignment.CenterVertically,
@@ -60,11 +62,14 @@ fun PetHeader(
             .padding(horizontal = 16.dp)
             .background(MaterialTheme.colorScheme.surface)
     ) {
-        Text(
-            text = name,
-            style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.weight(1f)
-        )
+        IconButton(
+            onClick = { onDelete() }
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Delete,
+                contentDescription = "Delete Pet"
+            )
+        }
         TextButton(
             onClick = { toggleShowFullDialog() }
         ) {
@@ -87,8 +92,8 @@ fun PetListScreen(
         targetState = petState,
         transitionSpec = {
             fadeIn(
-                animationSpec = tween(3000)
-            ) togetherWith fadeOut(animationSpec = tween(3000))
+                animationSpec = tween(1000)
+            ) togetherWith fadeOut(animationSpec = tween(2000))
         },
         label = "Animated Content"
     ) {  targetState ->
@@ -115,7 +120,7 @@ fun PetListScreen(
                     } else {
                         items(targetState.pets) { pet ->
                             PetHeader(
-                                name = "",
+                                onDelete = { petViewModel.deletePet(pet) },
                                 toggleShowFullDialog = toggleShowModal
                             )
                             PetInfo(pet = pet)
