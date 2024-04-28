@@ -1,5 +1,12 @@
 package fi.project.petcare.ui.nav
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -59,7 +66,8 @@ fun NavGraph(
                     petState = petState,
                     petViewModel = petViewModel,
                     toggleShowModal = toggleShowModal,
-                    showModal = showModal
+                    showModal = showModal,
+                    userId = user.id
                 )
             }
         }
@@ -76,11 +84,39 @@ fun NavGraph(
                 )
             }
         }
-        composable(Screen.Settings.route) {
+        composable(
+            Screen.Settings.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideIntoContainer(
+                    animationSpec = tween(300, easing = EaseIn),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideOutOfContainer(
+                    animationSpec = tween(300, easing = EaseOut),
+                    towards = AnimatedContentTransitionScope.SlideDirection.End
+                )
+            }
+
+        ) {
             SettingsScreen(
                 onNavigateBack = { navController.popBackStack() },
                 onSignOut = {
                     authViewModel.onSignOut()
+                    navController.navigate(Screen.Dashboard.Home.route) {
+                        popUpTo(Screen.Dashboard.Home.route) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
