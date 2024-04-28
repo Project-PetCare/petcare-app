@@ -8,6 +8,7 @@ import fi.project.petcare.model.data.SupabaseClientFactory
 import fi.project.petcare.model.repository.PetRepository
 import io.github.jan.supabase.gotrue.SessionStatus
 import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -60,6 +61,23 @@ class PetViewModel: ViewModel() {
                     _petUiState.value = PetUiState.Error(e.message ?: "Unknown error")
                 }
             )
+        }
+    }
+
+    fun deletePet(pet: PetResponse.Pet) {
+        viewModelScope.launch {
+            kotlin.runCatching {
+                client.from("pets").delete {
+                    filter {
+                        PetResponse.Pet::id eq pet.id
+                    }
+                }
+            }.onSuccess {
+                getPet()
+            }.onFailure { e ->
+                Log.e("PetViewModel", "Error deleting pet:", e)
+                _petUiState.value = PetUiState.Error(e.message ?: "No internet connection")
+            }
         }
     }
 }
