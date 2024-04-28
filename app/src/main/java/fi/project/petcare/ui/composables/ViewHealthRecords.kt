@@ -83,12 +83,12 @@ fun CreateScatterPlot(data: List<HealthRecord>) {
 
 // Draw data points
         data.forEach { record ->
-            val x = margin + (record.date.time.toFloat() - xValues.minOrNull()!!) * xScale
-            val y =
+            //val x = margin + (record.date.time.toFloat() - xValues.minOrNull()!!) * xScale
+            //val y =
                 plotHeight - margin - (record.type.ordinal.toFloat() - yValues.minOrNull()!!) * yScale
-            val colorMap = null
-            val color = colorMap[record.type] ?: Color.Black
-            drawCircle(color = color, radius = 10f, center = Offset(x, y))
+            //val colorMap = null
+            //val color = colorMap[record.type] ?: Color.Black
+            //drawCircle(color = color, radius = 10f, center = Offset(x, y))
         }
 
 // Draw gridlines
