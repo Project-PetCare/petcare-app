@@ -19,8 +19,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import fi.project.petcare.model.data.User
+
+@Preview
+@Composable
+fun PreviewHomeScreen() {
+    HomeScreen(
+        user = User(
+            id = "456fdsfs-456fd4sf-4f5d6sfds-45f64ds",
+            name = "John Doe",
+            email = "efdscv"
+        )
+    )
+}
 
 class Veterinarian(
     val name: String,
@@ -119,7 +132,8 @@ fun HomeScreen(
             Card (
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp)
+                    .padding(top = 16.dp),
+                shape = MaterialTheme.shapes.extraLarge
             ) {
                 Row (
                     verticalAlignment = Alignment.CenterVertically,

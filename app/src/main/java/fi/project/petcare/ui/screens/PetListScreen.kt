@@ -7,7 +7,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,8 +15,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Female
 import androidx.compose.material.icons.filled.Male
-import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.outlined.Cake
 import androidx.compose.material.icons.outlined.CatchingPokemon
 import androidx.compose.material.icons.outlined.MonitorWeight
@@ -33,11 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import fi.project.petcare.ui.composables.CreateScatterPlot
-import fi.project.petcare.ui.composables.getDummyHealthRecords
 import fi.project.petcare.R
 import fi.project.petcare.model.data.PetResponse
 import fi.project.petcare.ui.composables.LoadingIndicator
@@ -53,7 +49,7 @@ fun PreviewPetListScreen() {
             petState = PetUiState.Success(
                 listOf(
                     PetResponse.Pet(
-                        name = "Luna",
+                        name = "Max",
                         breed = "Golden Retriever",
                         weight = 25.0,
                         species = "Dog",
@@ -64,12 +60,12 @@ fun PreviewPetListScreen() {
                         ownerId = "1234567890"
                     ),
                     PetResponse.Pet(
-                        name = "Milo",
+                        name = "Luna",
                         breed = "Siamese",
                         weight = 5.0,
                         species = "Cat",
                         ageMonths = 12,
-                        gender = "Male",
+                        gender = "Female",
                         notes = "Very friendly and playful",
                         microchipId = 12456,
                         ownerId = "1234567890"
@@ -78,128 +74,6 @@ fun PreviewPetListScreen() {
                 )
             )
         )
-    }
-}
-
-@Composable
-fun PetInfo(
-    pet: PetResponse.Pet
-) {
-    Card (
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        shape = MaterialTheme.shapes.extraLarge
-    ) {
-        Row (
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            if (pet.imgUrl != null) {
-                Image(
-                    painter = painterResource(id = R.drawable.pet_icon_1),
-                    contentDescription = "Pet Cover Photo",
-                    modifier = Modifier
-                        .size(65.dp)
-                        .clip(CircleShape)
-                        .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-            } else {
-
-                Icon(
-                    imageVector = Icons.Outlined.CatchingPokemon,
-                    contentDescription = "Pet Icon",
-                    modifier = Modifier
-                        .size(65.dp)
-                        .clip(CircleShape)
-                )
-            }
-            Column (
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Pets,
-                        contentDescription = "Name Icon",
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Text(
-                        text = pet.name,
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Male,
-                        contentDescription = "sex",
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Text(
-                        text = pet.gender,
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                }
-            }
-            Column (
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.MonitorWeight,
-                        contentDescription = "Weight",
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Text(
-                        text = "Some item $item",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )}
-                    Card (
-                        modifier = Modifier
-                            .size(450.dp, 150.dp)
-                            .padding(horizontal = 16.dp)
-                            .padding(bottom = 16.dp)
-
-                    ) {
-                    // Add a spacer
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Add the scatter plot
-                    CreateScatterPlot(getDummyHealthRecords())
-
-                        text = pet.weight.toString() + " kg",
-                        style = MaterialTheme.typography.bodyLarge,
-
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Cake,
-                        contentDescription = "Age",
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Text(
-                        text = pet.ageMonths.toString() + " months",
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                }
-            }
-        }
     }
 }
 
@@ -260,59 +134,217 @@ fun PetListScreen(
                         )
                     }
                     item {
-                        Text(
-                            text = "Basic Information",
-                            style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
-                        )
                         PetInfo(
                             pet = pet
                         )
-                    }
-                    item {
-                        Text(
-                            text = "Behavioral Notes",
-                            style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
-                        )
-                        Card (
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                        ) {
-                            Column (
-                                modifier = Modifier.padding(16.dp)
-                            ) {
-                                Row (
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Text(
-                                        text = pet.breed,
-                                        style = MaterialTheme.typography.titleMedium,
-                                    )
-                                    Text(
-                                        text = pet.species,
-                                    )
-                                }
-                                Text(
-                                    text = pet.notes ?: "No notes available",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier.padding(top = 16.dp)
-                                )
-                            }
-                        }
                     }
                 }
             }
         }
         is PetUiState.Error -> {
             Text(text = petState.message)
+        }
+    }
+}
+
+@Composable
+fun CardsInfoRow(
+    pet: PetResponse.Pet
+) {
+    Row (
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Card (
+            modifier = Modifier.weight(1f),
+            shape = MaterialTheme.shapes.extraSmall
+        ) {
+            Column (
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Icon(
+                    imageVector =
+                    if (pet.gender == "Female") Icons.Default.Female
+                    else Icons.Default.Male,
+                    contentDescription = "sex"
+                )
+                Text(
+                    text = pet.gender,
+                    style = MaterialTheme.typography.titleLarge,
+                )
+            }
+        }
+        Card (
+            modifier = Modifier.weight(1f),
+            shape = MaterialTheme.shapes.extraSmall
+        ) {
+            Column (
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.MonitorWeight,
+                    contentDescription = "Weight"
+                )
+                Text(
+                    text = pet.weight.toString() + " kg",
+                    style = MaterialTheme.typography.titleLarge,
+                )
+            }
+        }
+        Card (
+            modifier = Modifier.weight(1f),
+            shape = MaterialTheme.shapes.extraSmall
+        ) {
+            Column (
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Cake,
+                    contentDescription = "Age"
+                )
+                Text(
+                    text = pet.ageMonths.toString() + " m",
+                    style = MaterialTheme.typography.titleLarge,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PetInfo(
+    pet: PetResponse.Pet
+) {
+    Column (
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        Card (
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.large.copy(
+                bottomStart = MaterialTheme.shapes.extraSmall.bottomStart,
+                bottomEnd = MaterialTheme.shapes.extraSmall.bottomStart
+            )
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier
+                    .padding(16.dp)
+            ) {
+                if (pet.imgUrl != null) {
+                    Image(
+                        painter = painterResource(id = R.drawable.pet_icon_1),
+                        contentDescription = "Pet Cover Photo",
+                        modifier = Modifier
+                            .size(65.dp)
+                            .clip(CircleShape)
+                            .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Outlined.CatchingPokemon,
+                        contentDescription = "Pet Icon",
+                        modifier = Modifier
+                            .size(65.dp)
+                            .clip(CircleShape)
+                    )
+                }
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = pet.name,
+                            style = MaterialTheme.typography.headlineSmall,
+                        )
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+
+                        Text(
+                            text = pet.breed,
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                    }
+                }
+            }
+        }
+        CardsInfoRow(pet = pet)
+        Card (
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.extraSmall
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = pet.species,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
+                Text(
+                    text = pet.notes ?: "No behavioral notes",
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
+        }
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.large.copy(
+                topStart = MaterialTheme.shapes.extraSmall.bottomStart,
+                topEnd = MaterialTheme.shapes.extraSmall.bottomStart
+            )
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Column (
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = "Policy Number",
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        text = "456DFDS789",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+                Column (
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = "Microchip ID",
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        text = pet.microchipId.toString(),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
         }
     }
 }
