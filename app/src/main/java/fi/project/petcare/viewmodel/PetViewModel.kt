@@ -44,7 +44,7 @@ class PetViewModel: ViewModel() {
                         )
                     }
                     else -> {
-                        _petUiState.value = PetUiState.Error("User not authenticated")
+                        _petUiState.value = PetUiState.Error("Get started by joining PetCare!")
                     }
                 }
             }
