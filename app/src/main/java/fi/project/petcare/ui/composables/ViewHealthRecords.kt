@@ -24,7 +24,7 @@ import java.util.Date
 fun getDummyHealthRecords(): List<HealthRecord> {
     return listOf(
         HealthRecord(HealthRecordType.OPERATION, Date(2023-5-5), "Details of operation"),
-        HealthRecord(HealthRecordType.VETERINARIAN_VISIT, Date(2021-9-7), "Details of vet visit"),
+        HealthRecord(HealthRecordType.VETERINARIAN_VISIT, Date(2021-3-4), "Details of vet visit"),
         HealthRecord(HealthRecordType.MEDICATION, Date(2020-3-3), "Details of medication"),
         HealthRecord(HealthRecordType.SYMPTOM, Date(1992-4-6), "Details of symptom"),
         HealthRecord(HealthRecordType.ALLERGY, Date(1999-9-9), "Details of allergy"),
@@ -32,7 +32,6 @@ fun getDummyHealthRecords(): List<HealthRecord> {
         HealthRecord(HealthRecordType.WEIGHT_MEASUREMENT, Date(2005-2-5), "Details of weight measurement")
     )
 }
-
 @Composable
 fun ViewHealthRecords() {
     val healthRecords = getDummyHealthRecords()
@@ -44,7 +43,8 @@ fun ViewHealthRecords() {
     ) {
         Text(text = "View Health Records")
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(25.dp))
+
 
         // Display each health record
         healthRecords.forEach { record ->
@@ -58,6 +58,7 @@ fun ViewHealthRecords() {
     }
 }
 
+
 @Composable
 fun CreateScatterPlot(data: List<HealthRecord>) {
     val plotWidth = 900f
@@ -70,30 +71,60 @@ fun CreateScatterPlot(data: List<HealthRecord>) {
         // Draw background
         drawRect(color = backgroundColor, size = Size(plotWidth, plotHeight))
 
-        // Calculate the scaling factors for the x and y axes
+        // Calculate xValues and yValues
         val xValues = data.map { it.date.time.toFloat() }
         val yValues = data.map { it.type.ordinal.toFloat() }
 
-        // Check if xValues and yValues are not null
-        if (xValues.isNotEmpty() && yValues.isNotEmpty()) {
-            val xRange = xValues.maxOrNull()!! - xValues.minOrNull()!!
-            val yRange = yValues.maxOrNull()!! - yValues.minOrNull()!!
-            val xScale = (plotWidth - 2 * margin) / xRange
-            val yScale = (plotHeight - 2 * margin) / yRange
+// Calculate scaling factors
+        val xRange = xValues.maxOrNull()!! - xValues.minOrNull()!!
+        val yRange = yValues.maxOrNull()!! - yValues.minOrNull()!!
+        val xScale = (plotWidth - 2 * margin) / xRange
+        val yScale = (plotHeight - 2 * margin) / yRange
 
-            // Draw the data points
-            data.forEach { record ->
-                val x = margin + (record.date.time.toFloat() - xValues.minOrNull()!!) * xScale
-                val y = plotHeight - margin - (record.type.ordinal.toFloat() - yValues.minOrNull()!!) * yScale
-                drawCircle(color = Color.Red, radius = 20f, center = Offset(x, y))
-            }
+// Draw data points
+        data.forEach { record ->
+            val x = margin + (record.date.time.toFloat() - xValues.minOrNull()!!) * xScale
+            val y =
+                plotHeight - margin - (record.type.ordinal.toFloat() - yValues.minOrNull()!!) * yScale
+            val colorMap = null
+            val color = colorMap[record.type] ?: Color.Black
+            drawCircle(color = color, radius = 10f, center = Offset(x, y))
         }
+
+// Draw gridlines
+        val gridLineColor = Color.LightGray.copy(alpha = 0.5f)
+        val gridStepX = (xRange / 5f)
+        val gridStepY = (yRange / 5f)
+        for (i in 0..5) {
+            val xLine = margin + i * gridStepX * xScale
+            drawLine(
+                color = gridLineColor,
+                start = Offset(xLine, margin),
+                end = Offset(xLine, plotHeight - margin)
+            )
+        }
+        for (i in 0..5) {
+            val yLine = plotHeight - margin - i * gridStepY * yScale
+            drawLine(
+                color = gridLineColor,
+                start = Offset(margin, yLine),
+                end = Offset(plotWidth - margin, yLine)
+            )
+        }
+
+        // Draw the data points with different colors based on type
+        val colorMap = mapOf(
+            HealthRecordType.OPERATION to Color.Red,
+            HealthRecordType.VETERINARIAN_VISIT to Color.Blue,
+            HealthRecordType.MEDICATION to Color(0xFFFFA500), // Orange
+            HealthRecordType.SYMPTOM to Color.Green,
+            HealthRecordType.ALLERGY to Color(0xFF388E3C), // Green shade
+            HealthRecordType.EXERCISE to Color(0xFFA020F0), // Purple
+            HealthRecordType.WEIGHT_MEASUREMENT to Color.Gray
+        )
+
     }
 }
-
-
-
-
 
 @Preview(showSystemUi = true)
 @Composable

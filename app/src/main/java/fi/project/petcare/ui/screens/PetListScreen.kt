@@ -7,11 +7,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-<<<<<<< HEAD
 import androidx.compose.foundation.layout.Spacer
-=======
 import androidx.compose.foundation.layout.aspectRatio
->>>>>>> main
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,18 +33,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-<<<<<<< HEAD
 import fi.project.petcare.ui.composables.CreateScatterPlot
 import fi.project.petcare.ui.composables.getDummyHealthRecords
-=======
 import fi.project.petcare.R
 import fi.project.petcare.model.data.PetResponse
 import fi.project.petcare.ui.composables.LoadingIndicator
 import fi.project.petcare.ui.theme.bg_gr
 import fi.project.petcare.viewmodel.PetUiState
->>>>>>> main
 
 @Preview(showBackground = true)
 @Composable
@@ -168,7 +163,6 @@ fun PetInfo(
                         modifier = Modifier.size(24.dp)
                     )
                     Text(
-<<<<<<< HEAD
                         text = "Some item $item",
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
@@ -185,10 +179,10 @@ fun PetInfo(
 
                     // Add the scatter plot
                     CreateScatterPlot(getDummyHealthRecords())
-=======
+
                         text = pet.weight.toString() + " kg",
                         style = MaterialTheme.typography.bodyLarge,
-                    )
+
                 }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -203,7 +197,6 @@ fun PetInfo(
                         text = pet.ageMonths.toString() + " months",
                         style = MaterialTheme.typography.bodyLarge,
                     )
->>>>>>> main
                 }
             }
         }
