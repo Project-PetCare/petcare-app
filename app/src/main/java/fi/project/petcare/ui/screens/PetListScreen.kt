@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Female
 import androidx.compose.material.icons.filled.Male
 import androidx.compose.material.icons.outlined.Cake
+import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.MonitorWeight
 import androidx.compose.material3.Card
@@ -165,6 +166,11 @@ fun PetListScreen(
 fun CardsInfoRow(
     pet: PetResponse.Pet
 ) {
+    val sexIcon =
+        if (pet.gender == "Female") Icons.Default.Female
+        else if (pet.gender == "Male") Icons.Default.Male
+        else Icons.Outlined.Circle
+
     Row (
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.fillMaxWidth()
@@ -178,9 +184,7 @@ fun CardsInfoRow(
                 modifier = Modifier.padding(16.dp)
             ) {
                 Icon(
-                    imageVector =
-                    if (pet.gender == "Female") Icons.Default.Female
-                    else Icons.Default.Male,
+                    imageVector = sexIcon,
                     contentDescription = "sex"
                 )
                 Text(
