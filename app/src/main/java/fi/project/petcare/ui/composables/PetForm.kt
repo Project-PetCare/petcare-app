@@ -1,4 +1,4 @@
-package fi.project.petcare.ui.screens
+package fi.project.petcare.ui.composables
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,13 +35,16 @@ import fi.project.petcare.model.data.PetResponse
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PetProfileFormScreen(
+fun PetProfileForm(
     innerPaddingValues: PaddingValues,
     newPet: PetResponse.Pet,
     onUpdatePet: (PetResponse.Pet) -> Unit
 ) {
     var expandedMenu by remember { mutableStateOf(false) }
     val genderOptions = listOf("Female", "Neutered", "Male")
+    var age by remember { mutableStateOf("") }
+    var weight by remember { mutableStateOf("") }
+    var microchipId by remember { mutableStateOf("") }
     var petNameError by remember { mutableStateOf("") }
     var weightError by remember { mutableStateOf("") }
     var speciesError by remember { mutableStateOf("") }
@@ -83,8 +86,9 @@ fun PetProfileFormScreen(
         item {
             // Microchip ID field with validation
             OutlinedTextField(
-                value = newPet.microchipId.toString(), // Convert Int to String for TextField
+                value = microchipId, // Convert Int to String for TextField
                 onValueChange = {
+                    microchipId = it
                     onUpdatePet( newPet.copy(microchipId = it.toIntOrNull() ?: 0) )
                     microchipIdError = if (it.isEmpty()) "Microchip ID cannot be empty" else ""
                 },
@@ -167,6 +171,7 @@ fun PetProfileFormScreen(
                             onClick = {
                                 onUpdatePet(newPet.copy(gender = gender))
                                 expandedMenu = false
+
                             }
                         )
                     }
@@ -176,9 +181,14 @@ fun PetProfileFormScreen(
         item {
             // Weight field with validation
             OutlinedTextField(
-                value = newPet.weight.toString(),
+                value = weight,
                 onValueChange = {
-                    onUpdatePet(newPet.copy(weight = it.toDoubleOrNull() ?: 0.0))
+                    weight = it
+                    onUpdatePet(
+                        newPet.copy(
+                            weight = it.replace(",", ".").toDoubleOrNull() ?: 0.0
+                        )
+                    )
                     weightError = if (it.isEmpty()) "Weight cannot be empty" else ""
                 },
                 keyboardOptions = KeyboardOptions(
@@ -225,8 +235,9 @@ fun PetProfileFormScreen(
         item {
             // Birthdate field with validation
             OutlinedTextField(
-                value = newPet.ageMonths.toString(), // Convert Double to String for TextField
+                value = age, // Convert Double to String for TextField
                 onValueChange = {
+                    age = it
                     onUpdatePet(newPet.copy(ageMonths = it.toIntOrNull() ?: 0))
                     ageMonthsError = if (it.isEmpty()) "Age cannot be empty" else ""
                 },
