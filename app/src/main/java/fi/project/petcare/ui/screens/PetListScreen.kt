@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,7 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Female
 import androidx.compose.material.icons.filled.Male
 import androidx.compose.material.icons.outlined.Cake
-import androidx.compose.material.icons.outlined.CatchingPokemon
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.MonitorWeight
 import androidx.compose.material3.Card
@@ -36,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -129,7 +128,27 @@ fun PetListScreen(
                 }
             }
             is PetUiState.Error -> {
-                Text(text = targetState.message)
+                val pet = PetResponse.Pet(
+                    name = "Fluffy",
+                    species = "Dog",
+                    breed = "Golden Retriever",
+                    ageMonths = 10,
+                    microchipId = 123456789,
+                    ownerId = "123fd-789dsf465-4fd6s",
+                    notes = "Fluffy is a very friendly dog. He loves to play fetch and go for walks.",
+                    weight = 15.0,
+                    gender = "Male",
+                )
+                Column (
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    PetHeader(
+                        onDelete = { /* no-op */ },
+                        toggleShowFullDialog = toggleShowModal
+                    )
+                    PetInfo(pet = pet)
+                }
             }
         }
     }
@@ -234,23 +253,25 @@ fun PetInfo(
                 modifier = Modifier
                     .padding(16.dp)
             ) {
-                if (pet.imgUrl != null) {
+                if (pet.name == "Fluffy") {
                     Image(
                         painter = painterResource(id = R.drawable.pet_icon_1),
                         contentDescription = "Pet Cover Photo",
                         modifier = Modifier
-                            .size(65.dp)
-                            .clip(CircleShape)
-                            .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape),
+                            .size(98.dp)
+                            .clip(CircleShape),
                         contentScale = ContentScale.Crop
                     )
                 } else {
-                    Icon(
-                        imageVector = Icons.Outlined.CatchingPokemon,
-                        contentDescription = "Pet Icon",
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_petcare_default),
+                        colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onBackground),
+                        contentDescription = "Pet Cover Photo",
                         modifier = Modifier
-                            .size(65.dp)
+                            .size(98.dp)
                             .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.background),
+                        contentScale = ContentScale.Crop
                     )
                 }
                 Column(
@@ -262,7 +283,7 @@ fun PetInfo(
                     ) {
                         Text(
                             text = pet.name,
-                            style = MaterialTheme.typography.headlineSmall,
+                            style = MaterialTheme.typography.headlineMedium,
                         )
                     }
                     Row(
