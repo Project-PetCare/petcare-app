@@ -1,6 +1,10 @@
 package fi.project.petcare.ui.screens
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Female
@@ -31,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fi.project.petcare.R
 import fi.project.petcare.model.data.PetResponse
@@ -39,42 +45,6 @@ import fi.project.petcare.ui.composables.LoadingIndicator
 import fi.project.petcare.ui.theme.bg_gr
 import fi.project.petcare.viewmodel.PetUiState
 import fi.project.petcare.viewmodel.PetViewModel
-
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewPetListScreen() {
-//    Surface {
-//        PetListScreen(
-//            petState = PetUiState.Success(
-//                listOf(
-//                    PetResponse.Pet(
-//                        name = "Max",
-//                        breed = "Golden Retriever",
-//                        weight = 25.0,
-//                        species = "Dog",
-//                        ageMonths = 12,
-//                        gender = "Male",
-//                        notes = "Very friendly and playful",
-//                        microchipId = 12456,
-//                        ownerId = "1234567890"
-//                    ),
-//                    PetResponse.Pet(
-//                        name = "Luna",
-//                        breed = "Siamese",
-//                        weight = 5.0,
-//                        species = "Cat",
-//                        ageMonths = 12,
-//                        gender = "Female",
-//                        notes = "Very friendly and playful",
-//                        microchipId = 12456,
-//                        ownerId = "1234567890"
-//
-//                    )
-//                )
-//            )
-//        )
-//    }
-//}
 
 @Composable
 fun PetHeader(
@@ -105,53 +75,66 @@ fun PetHeader(
     }
 }
 
-
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PetListScreen(
-    petViewModel: PetViewModel,
     petState: PetUiState,
+    petViewModel: PetViewModel,
     showModal: Boolean,
-    toggleShowModal: () -> Unit
+    toggleShowModal: () -> Unit,
+    userId: String
 ) {
-    when (petState) {
-        is PetUiState.Loading -> {
-            LoadingIndicator(
-                modifier = Modifier.aspectRatio(1f),
-                color = bg_gr
-            )
-        }
-        is PetUiState.Success -> {
-            LazyColumn (
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                petState.pets.forEach { pet ->
-                    stickyHeader {
-                        PetHeader(
-                            name = pet.name,
-                            toggleShowFullDialog = toggleShowModal
-                        )
-                    }
-                    item {
-                        PetInfo(
-                            pet = pet
-                        )
+    AnimatedContent(
+        targetState = petState,
+        transitionSpec = {
+            fadeIn(
+                animationSpec = tween(3000)
+            ) togetherWith fadeOut(animationSpec = tween(3000))
+        },
+        label = "Animated Content"
+    ) {  targetState ->
+        when (targetState) {
+            is PetUiState.Loading -> {
+                LoadingIndicator(
+                    modifier = Modifier.aspectRatio(1f),
+                    color = bg_gr
+                )
+            }
+            is PetUiState.Success -> {
+                LazyColumn (
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    if (targetState.pets.isEmpty()) {
+                        item {
+                            Text(
+                                text = "Start by adding a new pet profile!",
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
+                    } else {
+                        items(targetState.pets) { pet ->
+                            PetHeader(
+                                name = "",
+                                toggleShowFullDialog = toggleShowModal
+                            )
+                            PetInfo(pet = pet)
+                        }
                     }
                 }
             }
-            val pet = petState.pets.first()
-            FullScreenModal(
-                showModal = showModal,
-                toggleShowFullModal = toggleShowModal,
-                onSubmit = petViewModel::upsertPet,
-                pet = pet
-            )
-        }
-        is PetUiState.Error -> {
-            Text(text = petState.message)
+            is PetUiState.Error -> {
+                Text(text = targetState.message)
+            }
         }
     }
+
+    FullScreenModal(
+        showModal = showModal,
+        toggleShowFullModal = toggleShowModal,
+        onSubmit = petViewModel::upsertPet,
+        userId = userId
+    )
 }
 
 @Composable
@@ -179,6 +162,8 @@ fun CardsInfoRow(
                 Text(
                     text = pet.gender,
                     style = MaterialTheme.typography.titleLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
