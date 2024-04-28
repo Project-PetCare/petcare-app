@@ -1,24 +1,25 @@
 package fi.project.petcare.ui.screens
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Animation
 import androidx.compose.material.icons.filled.CalendarViewMonth
 import androidx.compose.material.icons.filled.MonitorWeight
+import androidx.compose.material.icons.filled.NoteAlt
 import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.filled.Pets
+import androidx.compose.material.icons.outlined.Transgender
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,20 +28,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import fi.project.petcare.model.data.PetResponse
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PetProfileFormScreen(
     innerPaddingValues: PaddingValues,
     newPet: PetResponse.Pet,
     onUpdatePet: (PetResponse.Pet) -> Unit
 ) {
-    val radioOptions = listOf("Female", "Neutered", "Male")
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
+    var expandedMenu by remember { mutableStateOf(false) }
+    val genderOptions = listOf("Female", "Neutered", "Male")
     var petNameError by remember { mutableStateOf("") }
     var weightError by remember { mutableStateOf("") }
     var speciesError by remember { mutableStateOf("") }
@@ -55,6 +56,30 @@ fun PetProfileFormScreen(
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        item {
+            // Pet name field with validation
+            OutlinedTextField(
+                value = newPet.name,
+                onValueChange = {
+                    onUpdatePet(newPet.copy(name = it))
+                    petNameError = if (it.isEmpty()) "Pet name cannot be empty" else ""
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next,
+                ),
+                shape = MaterialTheme.shapes.large,
+                label = { Text("Name") },
+                leadingIcon = { Icon(imageVector = Icons.Default.Pets, contentDescription = null) },
+                isError = petNameError.isNotEmpty(),
+                singleLine = true,
+                supportingText = {
+                    Text(
+                        text = petNameError
+                    )
+                }
+            )
+        }
         item {
             // Microchip ID field with validation
             OutlinedTextField(
@@ -84,53 +109,68 @@ fun PetProfileFormScreen(
             )
         }
         item {
-            // Pet name field with validation
+            // Species field with validation
             OutlinedTextField(
-                value = newPet.name,
+                value = newPet.species,
                 onValueChange = {
-                    onUpdatePet(newPet.copy(name = it))
-                    petNameError = if (it.isEmpty()) "Pet name cannot be empty" else ""
+                    onUpdatePet(newPet.copy(species = it))
+                    speciesError = if (it.isEmpty()) "Species cannot be empty" else ""
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next,
                 ),
                 shape = MaterialTheme.shapes.large,
-                label = { Text("Pet Name") },
-                leadingIcon = { Icon(imageVector = Icons.Default.Pets, contentDescription = null) },
-                isError = petNameError.isNotEmpty(),
+                label = { Text("Species") },
+                leadingIcon = { Icon(imageVector = Icons.Default.Animation, contentDescription = null) },
+                isError = speciesError.isNotEmpty(),
                 singleLine = true,
                 supportingText = {
                     Text(
-                        text = petNameError
+                        text = speciesError
                     )
                 }
             )
         }
-        items(radioOptions) { option ->
-            Row (
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp, horizontal = 48.dp)
-                    .selectable(
-                        selected = (option == selectedOption),
-                        onClick = {
-                            onUpdatePet(newPet.copy(gender = option))
-                            onOptionSelected(option)
-                        },
-                        role = Role.RadioButton
-                    )
+        item {
+            ExposedDropdownMenuBox(
+                expanded = expandedMenu,
+                onExpandedChange = { expandedMenu = it }
             ) {
-                RadioButton(
-                    selected = (option == selectedOption),
-                    onClick = null
+                OutlinedTextField(
+                    modifier = Modifier.menuAnchor(),
+                    readOnly = true,
+                    value = newPet.gender,
+                    onValueChange = {
+                        onUpdatePet(newPet.copy(gender = it))
+                    },
+                    shape = MaterialTheme.shapes.large,
+                    label = { Text("Sex") },
+                    leadingIcon = { Icon(imageVector = Icons.Outlined.Transgender, contentDescription = null) },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedMenu)
+                    },
+                    singleLine = true,
+                    supportingText = {
+                        Text(
+                            text = petNameError
+                        )
+                    }
                 )
-                Text(
-                    text = option,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
+                ExposedDropdownMenu(
+                    expanded = expandedMenu,
+                    onDismissRequest = { expandedMenu = false }
+                ) {
+                    genderOptions.forEach { gender ->
+                        DropdownMenuItem(
+                            text = { Text(gender) },
+                            onClick = {
+                                onUpdatePet(newPet.copy(gender = gender))
+                                expandedMenu = false
+                            }
+                        )
+                    }
+                }
             }
         }
         item {
@@ -154,32 +194,8 @@ fun PetProfileFormScreen(
                     Text(
                         text = weightError
                     )
-                }
-            )
-        }
-
-        item {
-            // Species field with validation
-            OutlinedTextField(
-                value = newPet.species,
-                onValueChange = {
-                    onUpdatePet(newPet.copy(species = it))
-                    speciesError = if (it.isEmpty()) "Species cannot be empty" else ""
                 },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next,
-                ),
-                shape = MaterialTheme.shapes.large,
-                label = { Text("Species") },
-                leadingIcon = { Icon(imageVector = Icons.Default.Animation, contentDescription = null) },
-                isError = speciesError.isNotEmpty(),
-                singleLine = true,
-                supportingText = {
-                    Text(
-                        text = speciesError
-                    )
-                }
+                modifier = Modifier.padding(top = 16.dp)
             )
         }
         item {
@@ -216,11 +232,34 @@ fun PetProfileFormScreen(
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done,
+                    imeAction = ImeAction.Next,
                 ),
                 shape = MaterialTheme.shapes.large,
                 label = { Text("Age months") },
                 leadingIcon = { Icon(imageVector = Icons.Default.CalendarViewMonth, contentDescription = null) },
+                isError = ageMonthsError.isNotEmpty(),
+                singleLine = true,
+                supportingText = {
+                    Text(
+                        text = ageMonthsError
+                    )
+                }
+            )
+        }
+        item {
+            // Birthdate field with validation
+            OutlinedTextField(
+                value = newPet.notes ?: "",
+                onValueChange = {
+                    onUpdatePet(newPet.copy(notes = it))
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Done,
+                ),
+                shape = MaterialTheme.shapes.large,
+                label = { Text("Behavior") },
+                leadingIcon = { Icon(imageVector = Icons.Default.NoteAlt, contentDescription = null) },
                 isError = ageMonthsError.isNotEmpty(),
                 singleLine = true,
                 supportingText = {
