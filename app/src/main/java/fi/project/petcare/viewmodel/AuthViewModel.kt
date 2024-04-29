@@ -8,6 +8,7 @@ import fi.project.petcare.model.data.User
 import fi.project.petcare.model.data.demoUser
 import fi.project.petcare.model.repository.AuthRepository
 import io.github.jan.supabase.exceptions.BadRequestRestException
+import io.github.jan.supabase.exceptions.UnknownRestException
 import io.github.jan.supabase.gotrue.SessionSource
 import io.github.jan.supabase.gotrue.SessionStatus
 import io.github.jan.supabase.gotrue.auth
@@ -107,22 +108,25 @@ class AuthViewModel: ViewModel() {
         viewModelScope.launch {
             val result = AuthRepository(client).signUp(userName, userEmail, userPassword)
             result.fold(
-                onSuccess = { userInfo ->
-                    if (userInfo != null) {
-                        _authUiState.value = AuthUiState.Authenticated(
-                            User(
-                                id = userInfo.id,
-                                name = userInfo.userMetadata?.get("full_name").toString(),
-                                email = userInfo.email.toString()
-                            )
-                        )
-                    }
+                onSuccess = { _ ->
+                    _authUiState.value = AuthUiState.Error(
+                        message = "Please verify your email address."
+                    )
                 },
                 onFailure = { error ->
-                    Log.e("AuthViewModel", "Error registering user", error)
-                    _authUiState.value = AuthUiState.Error(
-                        message = "Something went wrong. Please try again later."
-                    )
+                    when (error) {
+                        is UnknownRestException -> {
+                            if (error.message?.contains("Email rate limit exceeded") == true) {
+                                _authUiState.value = AuthUiState.Error(
+                                    message = "Please try again later."
+                                )
+                            }
+                            Log.e("AuthViewModel", "Error registering user", error)
+                            _authUiState.value = AuthUiState.Error(
+                                message = "Something went wrong. Please try again later."
+                            )
+                        }
+                    }
                 }
             )
         }

@@ -1,9 +1,12 @@
 package fi.project.petcare.ui.screens
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,74 +16,42 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Female
 import androidx.compose.material.icons.filled.Male
 import androidx.compose.material.icons.outlined.Cake
-import androidx.compose.material.icons.outlined.CatchingPokemon
+import androidx.compose.material.icons.outlined.Circle
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.MonitorWeight
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import fi.project.petcare.R
 import fi.project.petcare.model.data.PetResponse
+import fi.project.petcare.ui.composables.FullScreenModal
 import fi.project.petcare.ui.composables.LoadingIndicator
 import fi.project.petcare.ui.theme.bg_gr
 import fi.project.petcare.viewmodel.PetUiState
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewPetListScreen() {
-    Surface {
-        PetListScreen(
-            onNavigateToProfile = {},
-            petState = PetUiState.Success(
-                listOf(
-                    PetResponse.Pet(
-                        name = "Max",
-                        breed = "Golden Retriever",
-                        weight = 25.0,
-                        species = "Dog",
-                        ageMonths = 12,
-                        gender = "Male",
-                        notes = "Very friendly and playful",
-                        microchipId = 12456,
-                        ownerId = "1234567890"
-                    ),
-                    PetResponse.Pet(
-                        name = "Luna",
-                        breed = "Siamese",
-                        weight = 5.0,
-                        species = "Cat",
-                        ageMonths = 12,
-                        gender = "Female",
-                        notes = "Very friendly and playful",
-                        microchipId = 12456,
-                        ownerId = "1234567890"
-
-                    )
-                )
-            )
-        )
-    }
-}
+import fi.project.petcare.viewmodel.PetViewModel
 
 @Composable
 fun PetHeader(
-    name: String,
-    onNavigateToProfile: () -> Unit
+    toggleShowFullDialog: () -> Unit,
+    onDelete: () -> Unit = {}
 ) {
     Row (
         verticalAlignment = Alignment.CenterVertically,
@@ -89,15 +60,18 @@ fun PetHeader(
             .height(45.dp)
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.surface)
     ) {
-        Text(
-            text = name,
-            style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.weight(1f)
-        )
+        IconButton(
+            onClick = { onDelete() }
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Delete,
+                contentDescription = "Delete Pet"
+            )
+        }
         TextButton(
-            onClick = { onNavigateToProfile() }
+            onClick = { toggleShowFullDialog() }
         ) {
             Text(
                 text ="Edit"
@@ -106,51 +80,97 @@ fun PetHeader(
     }
 }
 
-
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PetListScreen(
-    onNavigateToProfile: () -> Unit,
-    petState: PetUiState
+    petState: PetUiState,
+    petViewModel: PetViewModel,
+    showModal: Boolean,
+    toggleShowModal: () -> Unit,
+    userId: String
 ) {
-
-    when (petState) {
-        is PetUiState.Loading -> {
-            LoadingIndicator(
-                modifier = Modifier.aspectRatio(1f),
-                color = bg_gr
-            )
-        }
-        is PetUiState.Success -> {
-            LazyColumn (
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                petState.pets.forEach { pet ->
-                    stickyHeader {
-                        PetHeader(
-                            name = pet.name,
-                            onNavigateToProfile = onNavigateToProfile
-                        )
-                    }
-                    item {
-                        PetInfo(
-                            pet = pet
-                        )
+    AnimatedContent(
+        targetState = petState,
+        transitionSpec = {
+            fadeIn(
+                animationSpec = tween(1000)
+            ) togetherWith fadeOut(animationSpec = tween(2000))
+        },
+        label = "Animated Content"
+    ) {  targetState ->
+        when (targetState) {
+            is PetUiState.Loading -> {
+                LoadingIndicator(
+                    modifier = Modifier.aspectRatio(1f),
+                    color = bg_gr
+                )
+            }
+            is PetUiState.Success -> {
+                LazyColumn (
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    if (targetState.pets.isEmpty()) {
+                        item {
+                            Text(
+                                text = "Start by adding a new pet profile!",
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
+                    } else {
+                        items(targetState.pets) { pet ->
+                            PetHeader(
+                                onDelete = { petViewModel.deletePet(pet) },
+                                toggleShowFullDialog = toggleShowModal
+                            )
+                            PetInfo(pet = pet)
+                        }
                     }
                 }
             }
-        }
-        is PetUiState.Error -> {
-            Text(text = petState.message)
+            is PetUiState.Error -> {
+                val pet = PetResponse.Pet(
+                    name = "Fluffy",
+                    species = "Dog",
+                    breed = "Golden Retriever",
+                    ageMonths = 10,
+                    microchipId = 123456789,
+                    ownerId = "123fd-789dsf465-4fd6s",
+                    notes = "Fluffy is a very friendly dog. He loves to play fetch and go for walks.",
+                    weight = 15.0,
+                    gender = "Male",
+                )
+                Column (
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    PetHeader(
+                        onDelete = { /* no-op */ },
+                        toggleShowFullDialog = toggleShowModal
+                    )
+                    PetInfo(pet = pet)
+                }
+            }
         }
     }
+
+    FullScreenModal(
+        showModal = showModal,
+        toggleShowFullModal = toggleShowModal,
+        onSubmit = petViewModel::upsertPet,
+        userId = userId
+    )
 }
 
 @Composable
 fun CardsInfoRow(
     pet: PetResponse.Pet
 ) {
+    val sexIcon =
+        if (pet.gender == "Female") Icons.Default.Female
+        else if (pet.gender == "Male") Icons.Default.Male
+        else Icons.Outlined.Circle
+
     Row (
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.fillMaxWidth()
@@ -164,14 +184,14 @@ fun CardsInfoRow(
                 modifier = Modifier.padding(16.dp)
             ) {
                 Icon(
-                    imageVector =
-                    if (pet.gender == "Female") Icons.Default.Female
-                    else Icons.Default.Male,
+                    imageVector = sexIcon,
                     contentDescription = "sex"
                 )
                 Text(
                     text = pet.gender,
                     style = MaterialTheme.typography.titleLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
@@ -237,23 +257,25 @@ fun PetInfo(
                 modifier = Modifier
                     .padding(16.dp)
             ) {
-                if (pet.imgUrl != null) {
+                if (pet.name == "Fluffy") {
                     Image(
                         painter = painterResource(id = R.drawable.pet_icon_1),
                         contentDescription = "Pet Cover Photo",
                         modifier = Modifier
-                            .size(65.dp)
-                            .clip(CircleShape)
-                            .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape),
+                            .size(98.dp)
+                            .clip(CircleShape),
                         contentScale = ContentScale.Crop
                     )
                 } else {
-                    Icon(
-                        imageVector = Icons.Outlined.CatchingPokemon,
-                        contentDescription = "Pet Icon",
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_petcare_default),
+                        colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onBackground),
+                        contentDescription = "Pet Cover Photo",
                         modifier = Modifier
-                            .size(65.dp)
+                            .size(98.dp)
                             .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.background),
+                        contentScale = ContentScale.Crop
                     )
                 }
                 Column(
@@ -265,7 +287,7 @@ fun PetInfo(
                     ) {
                         Text(
                             text = pet.name,
-                            style = MaterialTheme.typography.headlineSmall,
+                            style = MaterialTheme.typography.headlineMedium,
                         )
                     }
                     Row(
