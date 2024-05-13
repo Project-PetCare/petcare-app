@@ -1,6 +1,6 @@
 [versions]
 agp = "8.4.0"
-supabaseBom = "2.3.1"
+supabaseBom = "2.4.1-wasm0"
 credentials = "1.2.2"
 googleid = "1.1.0"
 kotlin = "1.9.23"
