@@ -1,5 +1,5 @@
 [versions]
-agp = "8.4.0"
+agp = "8.5.1"
 supabaseBom = "2.4.2"
 credentials = "1.2.2"
 googleid = "1.1.0"
